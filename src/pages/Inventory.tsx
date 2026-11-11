@@ -278,26 +278,26 @@ export function Inventory() {
         )}
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-blue-500">
           <p className="text-gray-600 text-sm">Total pièces</p>
-          <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+          <p className="text-xl md:text-2xl font-bold text-gray-900 whitespace-nowrap">{stats.total}</p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-orange-500">
           <p className="text-gray-600 text-sm">À commander</p>
-          <p className="text-2xl font-bold text-gray-900">{stats.aCommander}</p>
+          <p className="text-xl md:text-2xl font-bold text-gray-900 whitespace-nowrap">{stats.aCommander}</p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-purple-500">
           <p className="text-gray-600 text-sm">À rénover</p>
-          <p className="text-2xl font-bold text-gray-900">{stats.aRenover}</p>
+          <p className="text-xl md:text-2xl font-bold text-gray-900 whitespace-nowrap">{stats.aRenover}</p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-green-500">
           <p className="text-gray-600 text-sm">Commandées</p>
-          <p className="text-2xl font-bold text-gray-900">{stats.commande}</p>
+          <p className="text-xl md:text-2xl font-bold text-gray-900 whitespace-nowrap">{stats.commande}</p>
         </div>
         <div className="bg-white p-4 rounded-lg shadow-md border-l-4 border-amber-500">
           <p className="text-gray-600 text-sm">Coût estimé</p>
-          <p className="text-2xl font-bold text-gray-900">{stats.coutTotal.toFixed(2)}€</p>
+          <p className="text-xl md:text-2xl font-bold text-gray-900 whitespace-nowrap">{stats.coutTotal.toFixed(2)}€</p>
         </div>
       </div>
 

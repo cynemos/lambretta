@@ -129,51 +129,51 @@ export function Pieces() {
       {/* Statistiques */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-8">
         {/* Achat de la base */}
-        <div className="bg-gradient-to-r from-blue-100 to-cyan-100 rounded-xl p-4 sm:p-6 border-2 border-blue-200">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+        <div className="bg-gradient-to-r from-blue-100 to-cyan-100 rounded-xl p-4 lg:p-5 border-2 border-blue-200">
+          <div className="flex flex-col gap-2">
             <Car className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 text-blue-600" />
             <div>
-              <p className="text-xl sm:text-2xl font-bold text-blue-900">{formatPrice(statistics.baseCost)}</p>
+              <p className="text-xl md:text-2xl lg:text-xl font-bold whitespace-nowrap text-blue-900">{formatPrice(statistics.baseCost)}</p>
               <p className="text-blue-700 text-sm">Achat véhicule</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-amber-100 to-orange-100 rounded-xl p-4 sm:p-6 border-2 border-amber-200">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+        <div className="bg-gradient-to-r from-amber-100 to-orange-100 rounded-xl p-4 lg:p-5 border-2 border-amber-200">
+          <div className="flex flex-col gap-2">
             <Package className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 text-amber-600" />
             <div>
-              <p className="text-xl sm:text-2xl font-bold text-amber-900">{statistics.totalPieces}</p>
+              <p className="text-xl md:text-2xl lg:text-xl font-bold whitespace-nowrap text-amber-900">{statistics.totalPieces}</p>
               <p className="text-amber-700 text-sm">Pièces totales</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-orange-100 to-red-100 rounded-xl p-4 sm:p-6 border-2 border-orange-200">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+        <div className="bg-gradient-to-r from-orange-100 to-red-100 rounded-xl p-4 lg:p-5 border-2 border-orange-200">
+          <div className="flex flex-col gap-2">
             <Euro className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 text-orange-600" />
             <div>
-              <p className="text-xl sm:text-2xl font-bold text-orange-900">{formatPrice(statistics.piecesCost)}</p>
+              <p className="text-xl md:text-2xl lg:text-xl font-bold whitespace-nowrap text-orange-900">{formatPrice(statistics.piecesCost)}</p>
               <p className="text-orange-700 text-sm">Coût pièces</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl p-4 sm:p-6 border-2 border-purple-200">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+        <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl p-4 lg:p-5 border-2 border-purple-200">
+          <div className="flex flex-col gap-2">
             <FileText className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 text-purple-600" />
             <div>
-              <p className="text-xl sm:text-2xl font-bold text-purple-900">{formatPrice(statistics.administrativeCost)}</p>
+              <p className="text-xl md:text-2xl lg:text-xl font-bold whitespace-nowrap text-purple-900">{formatPrice(statistics.administrativeCost)}</p>
               <p className="text-purple-700 text-sm">Frais admin</p>
             </div>
           </div>
         </div>
 
-        <div className="col-span-2 md:col-span-1 bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl p-4 sm:p-6 border-2 border-green-200">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+        <div className="col-span-2 md:col-span-1 bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl p-4 lg:p-5 border-2 border-green-200">
+          <div className="flex flex-col gap-2">
             <Euro className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 text-green-600" />
             <div>
-              <p className="text-xl sm:text-2xl font-bold text-green-900">{formatPrice(statistics.totalProjectCost)}</p>
+              <p className="text-xl md:text-2xl lg:text-xl font-bold whitespace-nowrap text-green-900">{formatPrice(statistics.totalProjectCost)}</p>
               <p className="text-green-700 text-sm">Coût total</p>
             </div>
           </div>
@@ -269,24 +269,24 @@ export function Pieces() {
 
       {/* Contrôles */}
       <div className="bg-white rounded-xl border-4 border-amber-200 p-6 mb-6 shadow-lg">
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+        <div className="flex flex-col lg:flex-row gap-4 lg:items-center justify-between">
           {/* Recherche et filtres */}
-          <div className="flex flex-col md:flex-row gap-4 flex-1">
-            <div className="relative">
+          <div className="flex flex-col sm:flex-row gap-3 flex-1 w-full lg:w-auto">
+            <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-amber-600" />
               <input
                 type="text"
                 placeholder="Rechercher une pièce..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 border-2 border-amber-200 rounded-lg focus:border-amber-400 focus:outline-none"
+                className="w-full pl-10 pr-4 py-2 border-2 border-amber-200 rounded-lg focus:border-amber-400 focus:outline-none"
               />
             </div>
 
             <select
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
-              className="px-4 py-2 border-2 border-amber-200 rounded-lg focus:border-amber-400 focus:outline-none"
+              className="w-full sm:w-auto px-4 py-2 border-2 border-amber-200 rounded-lg focus:border-amber-400 focus:outline-none"
             >
               <option value="">Toutes les catégories</option>
               {categories.map(cat => (
@@ -297,7 +297,7 @@ export function Pieces() {
             <select
               value={filterState}
               onChange={(e) => setFilterState(e.target.value)}
-              className="px-4 py-2 border-2 border-amber-200 rounded-lg focus:border-amber-400 focus:outline-none"
+              className="w-full sm:w-auto px-4 py-2 border-2 border-amber-200 rounded-lg focus:border-amber-400 focus:outline-none"
             >
               <option value="">Tous les états</option>
               <option value="neuve">Neuve</option>
@@ -309,7 +309,7 @@ export function Pieces() {
           {isAdmin && (
             <button
               onClick={handleAdd}
-              className="bg-gradient-to-r from-amber-400 to-orange-400 text-white px-6 py-2 rounded-lg font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all flex items-center space-x-2"
+              className="bg-gradient-to-r from-amber-400 to-orange-400 text-white px-6 py-2 rounded-lg font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all flex items-center justify-center space-x-2 w-full lg:w-auto whitespace-nowrap"
             >
               <Plus className="h-4 w-4" />
               <span>Ajouter une pièce</span>
@@ -317,7 +317,7 @@ export function Pieces() {
           )}
           
           {!isAdmin && (
-            <div className="text-amber-700 text-sm italic">
+            <div className="text-amber-700 text-sm italic text-center lg:text-right">
               Mode lecture seule - Connectez-vous pour gérer les pièces
             </div>
           )}
