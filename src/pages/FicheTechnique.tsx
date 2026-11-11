@@ -19,7 +19,7 @@ export function FicheTechnique() {
     <div className="max-w-4xl mx-auto">
       {/* En-tête */}
       <header className="text-center mb-12">
-        <h2 className="text-4xl font-bold text-amber-900 mb-4 font-serif">
+        <h2 className="text-3xl sm:text-4xl font-bold text-amber-900 mb-4 font-serif">
           Fiche Technique
         </h2>
         <p className="text-amber-700 text-lg">

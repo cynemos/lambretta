@@ -115,12 +115,12 @@ export function TimeTracking() {
       </header>
 
       {/* Statistiques globales */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-gradient-to-r from-blue-100 to-cyan-100 rounded-xl p-6 border-2 border-blue-200">
-          <div className="flex items-center space-x-3">
-            <Clock className="h-8 w-8 text-blue-600" />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8">
+        <div className="bg-gradient-to-r from-blue-100 to-cyan-100 rounded-xl p-4 sm:p-6 border-2 border-blue-200">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+            <Clock className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 text-blue-600" />
             <div>
-              <p className="text-2xl font-bold text-blue-900">
+              <p className="text-xl sm:text-2xl font-bold text-blue-900">
                 {statistics.totalHours}h{statistics.remainingMinutes > 0 && ` ${statistics.remainingMinutes}min`}
               </p>
               <p className="text-blue-700 text-sm">Temps total</p>
@@ -128,21 +128,21 @@ export function TimeTracking() {
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl p-6 border-2 border-green-200">
-          <div className="flex items-center space-x-3">
-            <Calendar className="h-8 w-8 text-green-600" />
+        <div className="bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl p-4 sm:p-6 border-2 border-green-200">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+            <Calendar className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 text-green-600" />
             <div>
-              <p className="text-2xl font-bold text-green-900">{statistics.totalSessions}</p>
+              <p className="text-xl sm:text-2xl font-bold text-green-900">{statistics.totalSessions}</p>
               <p className="text-green-700 text-sm">Sessions</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-orange-100 to-red-100 rounded-xl p-6 border-2 border-orange-200">
-          <div className="flex items-center space-x-3">
-            <BarChart3 className="h-8 w-8 text-orange-600" />
+        <div className="bg-gradient-to-r from-orange-100 to-red-100 rounded-xl p-4 sm:p-6 border-2 border-orange-200">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+            <BarChart3 className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 text-orange-600" />
             <div>
-              <p className="text-2xl font-bold text-orange-900">
+              <p className="text-xl sm:text-2xl font-bold text-orange-900">
                 {formatDuration(Math.round(statistics.averageSessionMinutes))}
               </p>
               <p className="text-orange-700 text-sm">Moyenne/session</p>
@@ -150,11 +150,11 @@ export function TimeTracking() {
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl p-6 border-2 border-purple-200">
-          <div className="flex items-center space-x-3">
-            <Clock className="h-8 w-8 text-purple-600" />
+        <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl p-4 sm:p-6 border-2 border-purple-200">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+            <Clock className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 text-purple-600" />
             <div>
-              <p className="text-2xl font-bold text-purple-900">
+              <p className="text-xl sm:text-2xl font-bold text-purple-900">
                 {statistics.totalMinutes > 0 ? Math.round((statistics.totalMinutes / 60) / 30 * 100) / 100 : 0}
               </p>
               <p className="text-purple-700 text-sm">Semaines équiv.</p>

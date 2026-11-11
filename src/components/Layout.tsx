@@ -1,320 +1,195 @@
-import React, { ReactNode, useState } from 'react';
+import { ReactNode, useState } from 'react';
+import type { LucideIcon } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
-import { LogOut, Camera, Clock, Package, FileText, Menu, X, User, Timer, ClipboardList, BarChart3, FolderOpen, ArrowLeftRight } from 'lucide-react';
+import {
+  LogOut, Camera, Clock, Package, FileText, Menu, X, User, Timer,
+  ClipboardList, BarChart3, FolderOpen, ArrowLeftRight, Settings,
+} from 'lucide-react';
+
+export type Page =
+  | 'timeline' | 'admin' | 'pieces' | 'fiche-technique' | 'time-tracking'
+  | 'inventory' | 'statistics' | 'documents' | 'before-after' | 'login';
 
 interface LayoutProps {
   children: ReactNode;
-  currentPage: 'timeline' | 'admin' | 'pieces' | 'fiche-technique' | 'time-tracking' | 'inventory' | 'statistics' | 'documents' | 'before-after' | 'login';
-  onPageChange: (page: 'timeline' | 'admin' | 'pieces' | 'fiche-technique' | 'time-tracking' | 'inventory' | 'statistics' | 'documents' | 'before-after' | 'login') => void;
+  currentPage: Page;
+  onPageChange: (page: Page) => void;
 }
+
+const navigationItems: { key: Page; label: string; icon: LucideIcon }[] = [
+  { key: 'timeline', label: 'Timeline', icon: Clock },
+  { key: 'fiche-technique', label: 'Fiche technique', icon: FileText },
+  { key: 'pieces', label: 'Pièces', icon: Package },
+  { key: 'time-tracking', label: 'Temps', icon: Timer },
+  { key: 'inventory', label: 'Inventaire', icon: ClipboardList },
+  { key: 'statistics', label: 'Statistiques', icon: BarChart3 },
+  { key: 'documents', label: 'Documents', icon: FolderOpen },
+  { key: 'before-after', label: 'Avant/Après', icon: ArrowLeftRight },
+];
+
+const itemClass = (active: boolean) =>
+  `flex items-center gap-2 rounded-lg font-medium transition-all ${
+    active ? 'bg-amber-200 text-amber-900 shadow-md' : 'text-amber-700 hover:bg-amber-100'
+  }`;
 
 export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
   const { user, isAdmin, signOut } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const handleSignOut = async () => {
-    await signOut();
-    onPageChange('timeline');
-    setMobileMenuOpen(false);
-  };
-
-  const handlePageChange = (page: 'timeline' | 'admin' | 'pieces' | 'fiche-technique' | 'time-tracking' | 'inventory' | 'statistics' | 'documents' | 'before-after' | 'login') => {
+  const go = (page: Page) => {
     onPageChange(page);
     setMobileMenuOpen(false);
+    window.scrollTo({ top: 0 });
   };
 
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen);
+  const handleSignOut = async () => {
+    await signOut();
+    go('timeline');
   };
 
-  const navigationItems = [
-    {
-      key: 'timeline',
-      label: 'Timeline',
-      icon: Clock,
-    },
-    {
-      key: 'fiche-technique',
-      label: 'Fiche Technique',
-      icon: FileText,
-    },
-    {
-      key: 'pieces',
-      label: 'Pièces',
-      icon: Package,
-    },
-    {
-      key: 'time-tracking',
-      label: 'Temps',
-      icon: Timer,
-    },
-    {
-      key: 'inventory',
-      label: 'Inventaire',
-      icon: ClipboardList,
-    },
-    {
-      key: 'statistics',
-      label: 'Statistiques',
-      icon: BarChart3,
-    },
-    {
-      key: 'documents',
-      label: 'Documents',
-      icon: FolderOpen,
-    },
-    {
-      key: 'before-after',
-      label: 'Avant/Après',
-      icon: ArrowLeftRight,
-    },
-  ];
+  // Boutons du compte (Administration / Déconnexion ou Connexion), réutilisés partout
+  const accountButtons = (size: 'sm' | 'lg') => {
+    const pad = size === 'lg' ? 'px-4 py-3 w-full' : 'px-3 py-2 text-sm justify-center';
+    const icon = size === 'lg' ? 'h-5 w-5' : 'h-4 w-4';
+    return (
+      <>
+        {isAdmin && (
+          <button onClick={() => go('admin')} className={`${itemClass(currentPage === 'admin')} ${pad}`}>
+            <Settings className={icon} />
+            <span>Administration</span>
+          </button>
+        )}
+        {user ? (
+          <button onClick={handleSignOut} className={`${itemClass(false)} ${pad}`}>
+            <LogOut className={icon} />
+            <span>Déconnexion</span>
+          </button>
+        ) : (
+          <button onClick={() => go('login')} className={`${itemClass(currentPage === 'login')} ${pad}`}>
+            <User className={icon} />
+            <span>Connexion</span>
+          </button>
+        )}
+      </>
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-50">
-      {/* Header */}
-      <header className="bg-gradient-to-r from-amber-100 to-orange-100 shadow-lg border-b-4 border-amber-200">
-        <div className="max-w-4xl mx-auto px-4 py-4 lg:py-6">
-          <div className="flex items-center justify-between">
-            {/* Logo/Titre */}
-            <div className="flex items-center space-x-3">
-              <div className="bg-amber-200 p-2 lg:p-3 rounded-full shadow-md">
-                <Camera className="h-6 w-6 lg:h-8 lg:w-8 text-amber-800" />
-              </div>
-              <div>
-                <h1 className="text-lg lg:text-2xl font-bold text-amber-900 font-serif">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-amber-50 to-orange-50">
+      {/* En-tête */}
+      <header className="sticky top-0 z-30 bg-gradient-to-r from-amber-100 to-orange-100 shadow-md border-b-4 border-amber-200">
+        <div className="max-w-6xl mx-auto px-4">
+          {/* Ligne 1 : titre + compte (ordinateur) ou menu (mobile) */}
+          <div className="flex items-center justify-between gap-3 py-3">
+            <button
+              onClick={() => go('timeline')}
+              className="flex items-center gap-3 min-w-0 text-left"
+              aria-label="Retour à la timeline"
+            >
+              <span className="bg-amber-200 p-2 lg:p-2.5 rounded-full shadow-md flex-shrink-0">
+                <Camera className="h-6 w-6 lg:h-7 lg:w-7 text-amber-800" />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-lg sm:text-xl lg:text-2xl font-bold text-amber-900 font-serif leading-tight">
                   Restauration Lambretta LD125
-                </h1>
-                <p className="text-amber-700 text-xs lg:text-sm font-medium">
-                  Modèle 1956 - Carnet de bord
-                </p>
-              </div>
+                </span>
+                <span className="block text-amber-700 text-xs lg:text-sm font-medium">
+                  Modèle 1956 · Carnet de bord
+                </span>
+              </span>
+            </button>
+
+            <div className="hidden lg:flex items-center gap-2 flex-shrink-0">
+              {accountButtons('sm')}
             </div>
 
-            {/* Navigation Desktop */}
-            <nav className="hidden lg:flex items-center space-x-4">
-              {navigationItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.key}
-                    onClick={() => handlePageChange(item.key as any)}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all ${
-                      currentPage === item.key
-                        ? 'bg-amber-200 text-amber-900 shadow-md'
-                        : 'text-amber-700 hover:bg-amber-100'
-                    }`}
-                  >
-                    <Icon className="h-4 w-4" />
-                    <span>{item.label}</span>
-                  </button>
-                );
-              })}
-
-              {user && (
-                <>
-                  {isAdmin && (
-                    <button
-                      onClick={() => handlePageChange('admin')}
-                      className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all ${
-                        currentPage === 'admin'
-                          ? 'bg-amber-200 text-amber-900 shadow-md'
-                          : 'text-amber-700 hover:bg-amber-100'
-                      }`}
-                    >
-                      <Camera className="h-4 w-4" />
-                      <span>Administration</span>
-                    </button>
-                  )}
-
-                  <button
-                    onClick={handleSignOut}
-                    className="flex items-center space-x-2 px-4 py-2 rounded-lg font-medium text-amber-700 hover:bg-amber-100 transition-all"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    <span>Déconnexion</span>
-                  </button>
-                </>
-              )}
-
-              {!user && (
-                <button
-                  onClick={() => handlePageChange('login')}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                    currentPage === 'login'
-                      ? 'bg-amber-200 text-amber-900 shadow-md'
-                      : 'text-amber-700 hover:bg-amber-100'
-                  }`}
-                >
-                  Connexion
-                </button>
-              )}
-            </nav>
-
-            {/* Bouton Menu Mobile */}
             <button
-              onClick={toggleMobileMenu}
-              className="lg:hidden p-2 rounded-lg text-amber-700 hover:bg-amber-100 transition-all"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 rounded-lg text-amber-700 hover:bg-amber-200 transition-all flex-shrink-0"
               aria-label="Menu de navigation"
+              aria-expanded={mobileMenuOpen}
             >
-              {mobileMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
 
-          {/* Menu Mobile */}
+          {/* Ligne 2 : navigation (ordinateur) */}
+          <nav className="hidden lg:flex flex-wrap justify-center gap-1 pb-3" aria-label="Rubriques">
+            {navigationItems.map(({ key, label, icon: Icon }) => (
+              <button
+                key={key}
+                onClick={() => go(key)}
+                className={`${itemClass(currentPage === key)} px-3 py-2 text-sm whitespace-nowrap`}
+                aria-current={currentPage === key ? 'page' : undefined}
+              >
+                <Icon className="h-4 w-4" />
+                <span>{label}</span>
+              </button>
+            ))}
+          </nav>
+
+          {/* Menu mobile */}
           {mobileMenuOpen && (
-            <div className="lg:hidden mt-4 pb-4 border-t-2 border-amber-200 pt-4 relative z-20">
-              <nav className="space-y-2">
-                {navigationItems.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <button
-                      key={item.key}
-                      onClick={() => handlePageChange(item.key as any)}
-                      className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-all text-left ${
-                        currentPage === item.key
-                          ? 'bg-amber-200 text-amber-900 shadow-md'
-                          : 'text-amber-700 hover:bg-amber-100'
-                      }`}
-                    >
-                      <Icon className="h-5 w-5" />
-                      <span>{item.label}</span>
-                    </button>
-                  );
-                })}
-
-                {user && (
-                  <>
-                    {isAdmin && (
-                      <button
-                        onClick={() => handlePageChange('admin')}
-                        className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-all text-left ${
-                          currentPage === 'admin'
-                            ? 'bg-amber-200 text-amber-900 shadow-md'
-                            : 'text-amber-700 hover:bg-amber-100'
-                        }`}
-                      >
-                        <Camera className="h-5 w-5" />
-                        <span>Administration</span>
-                      </button>
-                    )}
-
-                    <button
-                      onClick={handleSignOut}
-                      className="w-full flex items-center space-x-3 px-4 py-3 rounded-lg font-medium text-amber-700 hover:bg-amber-100 transition-all text-left"
-                    >
-                      <LogOut className="h-5 w-5" />
-                      <span>Déconnexion</span>
-                    </button>
-                  </>
-                )}
-
-                {!user && (
+            <nav className="lg:hidden border-t-2 border-amber-200 py-3 relative z-20" aria-label="Rubriques">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
+                {navigationItems.map(({ key, label, icon: Icon }) => (
                   <button
-                    onClick={() => handlePageChange('login')}
-                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-all text-left ${
-                      currentPage === 'login'
-                        ? 'bg-amber-200 text-amber-900 shadow-md'
-                        : 'text-amber-700 hover:bg-amber-100'
-                    }`}
+                    key={key}
+                    onClick={() => go(key)}
+                    className={`${itemClass(currentPage === key)} px-4 py-3 w-full text-left`}
+                    aria-current={currentPage === key ? 'page' : undefined}
                   >
-                    <User className="h-5 w-5" />
-                    <span>Connexion</span>
+                    <Icon className="h-5 w-5" />
+                    <span>{label}</span>
                   </button>
-                )}
-              </nav>
-            </div>
+                ))}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 mt-2 pt-2 border-t-2 border-amber-200">
+                {accountButtons('lg')}
+              </div>
+            </nav>
           )}
         </div>
       </header>
 
-      {/* Overlay pour fermer le menu mobile */}
+      {/* Voile pour fermer le menu mobile */}
       {mobileMenuOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-25 z-10"
+          className="lg:hidden fixed inset-0 bg-black/25 z-20"
           onClick={() => setMobileMenuOpen(false)}
-          onTouchStart={() => setMobileMenuOpen(false)}
         />
       )}
 
       {/* Contenu */}
-      <main className="max-w-4xl mx-auto px-4 py-8 relative">
+      <main className="flex-1 w-full max-w-4xl mx-auto px-4 py-8">
         {children}
       </main>
 
-      {/* Footer */}
+      {/* Pied de page */}
       <footer className="bg-gradient-to-r from-amber-100 to-orange-100 border-t-2 border-amber-200 mt-16">
-        <div className="max-w-4xl mx-auto px-4 py-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-6">
-            {navigationItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <button
-                  key={item.key}
-                  onClick={() => handlePageChange(item.key as any)}
-                  className={`flex flex-col items-center space-y-1 px-2 py-3 rounded-lg font-medium transition-all text-xs ${
-                    currentPage === item.key
-                      ? 'bg-amber-200 text-amber-900 shadow-md'
-                      : 'text-amber-700 hover:bg-amber-100'
-                  }`}
-                >
-                  <Icon className="h-5 w-5" />
-                  <span>{item.label}</span>
-                </button>
-              );
-            })}
+        <div className="max-w-6xl mx-auto px-4 py-8">
+          <nav className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 mb-6" aria-label="Rubriques (pied de page)">
+            {navigationItems.map(({ key, label, icon: Icon }) => (
+              <button
+                key={key}
+                onClick={() => go(key)}
+                className={`${itemClass(currentPage === key)} flex-col justify-center gap-1 px-2 py-3 text-xs text-center`}
+              >
+                <Icon className="h-5 w-5" />
+                <span>{label}</span>
+              </button>
+            ))}
+          </nav>
+
+          <div className="flex flex-col sm:flex-row justify-center gap-2 mb-6 border-t-2 border-amber-200 pt-4">
+            {accountButtons('sm')}
           </div>
-
-          {user && (
-            <div className="flex flex-col sm:flex-row justify-center gap-3 mb-6 border-t-2 border-amber-200 pt-4">
-              {isAdmin && (
-                <button
-                  onClick={() => handlePageChange('admin')}
-                  className={`flex items-center justify-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all text-sm ${
-                    currentPage === 'admin'
-                      ? 'bg-amber-200 text-amber-900 shadow-md'
-                      : 'text-amber-700 hover:bg-amber-100'
-                  }`}
-                >
-                  <Camera className="h-4 w-4" />
-                  <span>Administration</span>
-                </button>
-              )}
-
-              <button
-                onClick={handleSignOut}
-                className="flex items-center justify-center space-x-2 px-4 py-2 rounded-lg font-medium text-amber-700 hover:bg-amber-100 transition-all text-sm"
-              >
-                <LogOut className="h-4 w-4" />
-                <span>Déconnexion</span>
-              </button>
-            </div>
-          )}
-
-          {!user && (
-            <div className="flex justify-center mb-6 border-t-2 border-amber-200 pt-4">
-              <button
-                onClick={() => handlePageChange('login')}
-                className={`flex items-center justify-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all text-sm ${
-                  currentPage === 'login'
-                    ? 'bg-amber-200 text-amber-900 shadow-md'
-                    : 'text-amber-700 hover:bg-amber-100'
-                }`}
-              >
-                <User className="h-4 w-4" />
-                <span>Connexion</span>
-              </button>
-            </div>
-          )}
 
           <div className="border-t-2 border-amber-200 pt-4 text-center">
             <p className="text-amber-700 font-medium text-xs lg:text-sm">
               Restauration avec passion • Lambretta LD125 1956
             </p>
+            <p className="text-amber-500 text-xs mt-1">Version {__APP_VERSION__}</p>
           </div>
         </div>
       </footer>

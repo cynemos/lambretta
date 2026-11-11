@@ -124,18 +124,25 @@ export function Timeline() {
   return (
     <>
       {/* En-tête */}
-      <header className="text-center mb-12">
-        <h2 className="text-4xl font-bold text-amber-900 mb-4 font-serif">
+      <header className="mb-10 sm:mb-12">
+        <h2 className="text-3xl sm:text-4xl font-bold text-amber-900 mb-6 font-serif text-center">
           Carnet de restauration
         </h2>
-        <p className="text-amber-700 text-lg max-w-2xl mx-auto">
-          Papa, Aujourd’hui, je commence un petit voyage avec toi… un voyage dans le temps, jusqu’à ces années où ton Lambretta LD125 t’emmenait partout et faisait briller tes yeux de jeunesse.
-          Chaque étape de cette restauration n’est pas seulement un travail mécanique : c’est une manière de te faire revivre ces souvenirs, de te faire sentir chaque détail, chaque avancée, même à distance.
-          À travers ce carnet, tu pourras suivre chaque moment, chaque photo, chaque vidéo… et partager avec moi cette passion et cette nostalgie.
-          J’espère que, page après page, tu retrouveras un peu de cette magie et de cette liberté que ce scooter t’a offerte il y a tant d’années.
-          Avec tout mon amour, Cyril
-        </p>
-        <div className="w-24 h-1 bg-amber-300 mx-auto mt-6 rounded-full"></div>
+        {/* Lettre d'introduction */}
+        <div className="max-w-2xl mx-auto bg-white/70 border-2 border-amber-200 rounded-xl shadow-sm px-5 py-6 sm:px-8 sm:py-8 text-amber-800 sm:text-lg leading-relaxed font-serif">
+          <p className="font-bold text-amber-900 mb-3">Papa,</p>
+          <div className="space-y-3">
+            <p>Aujourd’hui, je commence un petit voyage avec toi… un voyage dans le temps, jusqu’à ces années où ton Lambretta LD125 t’emmenait partout et faisait briller tes yeux de jeunesse.</p>
+            <p>Chaque étape de cette restauration n’est pas seulement un travail mécanique : c’est une manière de te faire revivre ces souvenirs, de te faire sentir chaque détail, chaque avancée, même à distance.</p>
+            <p>À travers ce carnet, tu pourras suivre chaque moment, chaque photo, chaque vidéo… et partager avec moi cette passion et cette nostalgie.</p>
+            <p>J’espère que, page après page, tu retrouveras un peu de cette magie et de cette liberté que ce scooter t’a offerte il y a tant d’années.</p>
+          </div>
+          <p className="mt-5 text-right italic">
+            Avec tout mon amour,<br />
+            <span className="font-bold not-italic text-amber-900">Cyril</span>
+          </p>
+        </div>
+        <div className="w-24 h-1 bg-amber-300 mx-auto mt-8 rounded-full"></div>
       </header>
 
       {/* Filtres de recherche */}

@@ -127,53 +127,53 @@ export function Pieces() {
       </header>
 
       {/* Statistiques */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-8">
         {/* Achat de la base */}
-        <div className="bg-gradient-to-r from-blue-100 to-cyan-100 rounded-xl p-6 border-2 border-blue-200">
-          <div className="flex items-center space-x-3">
-            <Car className="h-8 w-8 text-blue-600" />
+        <div className="bg-gradient-to-r from-blue-100 to-cyan-100 rounded-xl p-4 sm:p-6 border-2 border-blue-200">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+            <Car className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 text-blue-600" />
             <div>
-              <p className="text-2xl font-bold text-blue-900">{formatPrice(statistics.baseCost)}</p>
+              <p className="text-xl sm:text-2xl font-bold text-blue-900">{formatPrice(statistics.baseCost)}</p>
               <p className="text-blue-700 text-sm">Achat véhicule</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-amber-100 to-orange-100 rounded-xl p-6 border-2 border-amber-200">
-          <div className="flex items-center space-x-3">
-            <Package className="h-8 w-8 text-amber-600" />
+        <div className="bg-gradient-to-r from-amber-100 to-orange-100 rounded-xl p-4 sm:p-6 border-2 border-amber-200">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+            <Package className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 text-amber-600" />
             <div>
-              <p className="text-2xl font-bold text-amber-900">{statistics.totalPieces}</p>
+              <p className="text-xl sm:text-2xl font-bold text-amber-900">{statistics.totalPieces}</p>
               <p className="text-amber-700 text-sm">Pièces totales</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-orange-100 to-red-100 rounded-xl p-6 border-2 border-orange-200">
-          <div className="flex items-center space-x-3">
-            <Euro className="h-8 w-8 text-orange-600" />
+        <div className="bg-gradient-to-r from-orange-100 to-red-100 rounded-xl p-4 sm:p-6 border-2 border-orange-200">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+            <Euro className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 text-orange-600" />
             <div>
-              <p className="text-2xl font-bold text-orange-900">{formatPrice(statistics.piecesCost)}</p>
+              <p className="text-xl sm:text-2xl font-bold text-orange-900">{formatPrice(statistics.piecesCost)}</p>
               <p className="text-orange-700 text-sm">Coût pièces</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl p-6 border-2 border-purple-200">
-          <div className="flex items-center space-x-3">
-            <FileText className="h-8 w-8 text-purple-600" />
+        <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl p-4 sm:p-6 border-2 border-purple-200">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+            <FileText className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 text-purple-600" />
             <div>
-              <p className="text-2xl font-bold text-purple-900">{formatPrice(statistics.administrativeCost)}</p>
+              <p className="text-xl sm:text-2xl font-bold text-purple-900">{formatPrice(statistics.administrativeCost)}</p>
               <p className="text-purple-700 text-sm">Frais admin</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl p-6 border-2 border-green-200">
-          <div className="flex items-center space-x-3">
-            <Euro className="h-8 w-8 text-green-600" />
+        <div className="col-span-2 md:col-span-1 bg-gradient-to-r from-green-100 to-emerald-100 rounded-xl p-4 sm:p-6 border-2 border-green-200">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+            <Euro className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0 text-green-600" />
             <div>
-              <p className="text-2xl font-bold text-green-900">{formatPrice(statistics.totalProjectCost)}</p>
+              <p className="text-xl sm:text-2xl font-bold text-green-900">{formatPrice(statistics.totalProjectCost)}</p>
               <p className="text-green-700 text-sm">Coût total</p>
             </div>
           </div>

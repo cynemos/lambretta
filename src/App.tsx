@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useAuth } from './hooks/useAuth';
-import { Layout } from './components/Layout';
+import { Layout, type Page } from './components/Layout';
 import { Timeline } from './pages/Timeline';
 import { Admin } from './pages/Admin';
 import { Pieces } from './pages/Pieces';
@@ -12,8 +12,6 @@ import { Documents } from './pages/Documents';
 import { BeforeAfter } from './pages/BeforeAfter';
 import { Login } from './pages/Login';
 import { Loader2 } from 'lucide-react';
-
-type Page = 'timeline' | 'admin' | 'pieces' | 'fiche-technique' | 'time-tracking' | 'inventory' | 'statistics' | 'documents' | 'before-after' | 'login';
 
 function App() {
   const { user, isAdmin, loading } = useAuth();
