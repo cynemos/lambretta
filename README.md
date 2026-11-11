@@ -91,6 +91,33 @@ UPDATE public.profiles SET is_admin = true WHERE id = '<identifiant du compte>';
 3. Conserver l'ancienne version (`dist` → `dist.vX.Y.Z-date`), puis remplacer `dist` par `dist-new`. nginx sert directement le dossier `dist`.
 4. Si une migration accompagne la version : sauvegarder la base (`pg_dump`), puis appliquer la migration **juste avant** de basculer le site.
 
+## Sauvegardes
+
+Chaque nuit à 3 h 30 (UTC), le script [`scripts/sauvegarde_lambretta.sh`](scripts/sauvegarde_lambretta.sh) sauvegarde :
+
+- la **base de données** complète (`base.dump`, plus `roles.sql`) : contenu, comptes, règles d'accès ;
+- les **fichiers** envoyés sur le site (`fichiers.tar.gz`) : photos, vidéos, avant/après, inventaire ;
+- les **configurations** utiles pour tout reconstruire (Supabase, nginx, SSH, `.env` du site, version en ligne) ;
+- un **inventaire** (nombre de publications, commentaires, pièces…) et les empreintes SHA-256 de chaque fichier.
+
+Chaque sauvegarde est vérifiée (lisibilité de la base, intégrité de l'archive), gardée **7 jours sur le serveur**, puis copiée sur le **NAS** (monté en NFS sur `/mnt/nas-sauvegardes`, voir [`scripts/installer_montage_nas.sh`](scripts/installer_montage_nas.sh)). La copie est contrôlée par ses empreintes. Le NAS garde **30 jours**, plus la sauvegarde du 1er de chaque mois pendant **12 mois**.
+
+- Journal : `~/sauvegardes/auto/journal.log`
+- Dernier résultat : `~/sauvegardes/auto/ETAT` (`OK`, `PARTIEL` si le NAS était injoignable, ou `ECHEC`)
+
+### Restaurer
+
+```bash
+S=/mnt/nas-sauvegardes/lambretta/AAAA-MM-JJ_HHMM      # sauvegarde choisie
+( cd $S && sha256sum -c SHA256SUMS )                  # vérifier qu'elle est intacte
+# Base : remplace le contenu actuel (à faire Supabase démarré)
+docker exec -i supabase_db_supabase pg_restore -U postgres -d postgres --clean --if-exists --no-owner < $S/base.dump
+# Fichiers : remet les photos et vidéos
+gunzip -c $S/fichiers.tar.gz | docker exec -i supabase_storage_supabase tar -xf - -C /mnt
+```
+
+Comparer ensuite les chiffres de `$S/INVENTAIRE.txt` avec ceux du site. Les avertissements de `pg_restore` sur les fonctions internes de Supabase (`realtime`, `graphql`) sont normaux.
+
 ## Versions
 
 Chaque commit porte un numéro de version, dans `package.json` et en étiquette git (`vX.Y.Z`). La version en ligne est affichée en bas de chaque page.
@@ -100,6 +127,7 @@ Chaque commit porte un numéro de version, dans `package.json` et en étiquette 
 
 | Version | Contenu |
 |---|---|
+| **1.2.3** | Sauvegardes automatiques chaque nuit (base, fichiers, configurations) vers le NAS, vérifiées et testées en restauration ; scripts dans `scripts/` |
 | **1.2.2** | Ménage du code : plus aucune erreur de typage ni de lint, types précis à la place des `any` ; correction de la fenêtre de modification d'une publication (risque de plantage, texte d'une autre publication) |
 | **1.2.1** | Cartes de chiffres et barres de filtres qui débordaient sur ordinateur et tablette ; ce README |
 | **1.2.0** | Mise en page responsive (en-tête sur deux lignes, menu mobile), lettre d'introduction mise en forme, numéro de version affiché |
