@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { usePieces } from '../hooks/usePieces';
 import { useBasePurchase } from '../hooks/useBasePurchase';
 import { useAuth } from '../hooks/useAuth';
 import { PieceModal } from '../components/PieceModal';
 import { BasePurchaseModal } from '../components/BasePurchaseModal';
-import { Package, Plus, CreditCard as Edit, Trash2, Euro, Calendar, BarChart3, Loader2, Filter, Search, CheckCircle, Clock, Car, FileText } from 'lucide-react';
-import { Piece } from '../lib/supabase';
+import { Package, Plus, CreditCard as Edit, Trash2, Euro, BarChart3, Loader2, Search, Car, FileText } from 'lucide-react';
+import type { Piece, PieceInput, BasePurchaseInput } from '../lib/supabase';
 
 export function Pieces() {
   const { user, isAdmin } = useAuth();
@@ -14,8 +14,7 @@ export function Pieces() {
     basePurchase, 
     loading: basePurchaseLoading, 
     addBasePurchase, 
-    updateBasePurchase, 
-    deleteBasePurchase 
+    updateBasePurchase,
   } = useBasePurchase();
   const [editingPiece, setEditingPiece] = useState<Piece | null>(null);
   const [showModal, setShowModal] = useState(false);
@@ -47,7 +46,7 @@ export function Pieces() {
     setShowModal(true);
   };
 
-  const handleSave = async (pieceData: any) => {
+  const handleSave = async (pieceData: PieceInput) => {
     if (!user) return { success: false, error: 'Non authentifié' };
 
     const dataWithUser = { ...pieceData, user_id: user.id };
@@ -59,7 +58,7 @@ export function Pieces() {
     }
   };
 
-  const handleSaveBasePurchase = async (purchaseData: any) => {
+  const handleSaveBasePurchase = async (purchaseData: BasePurchaseInput) => {
     if (!user) return { success: false, error: 'Non authentifié' };
 
     const dataWithUser = { ...purchaseData, user_id: user.id };

@@ -38,13 +38,18 @@ export type Piece = {
   categorie: string;
   etat: 'neuve' | 'occasion';
   prix: number;
-  fournisseur?: string;
+  fournisseur?: string | null;
   date_achat: string;
-  date_installation?: string;
-  notes?: string;
+  date_installation?: string | null;
+  notes?: string | null;
+  inventory_part_id?: string | null;
   created_at: string;
   user_id: string;
 };
+
+// Données saisies dans les formulaires (l'identifiant, la date de création
+// et l'auteur sont ajoutés au moment de l'enregistrement)
+export type PieceInput = Omit<Piece, 'id' | 'created_at' | 'user_id'>;
 
 export type Comment = {
   id: string;
@@ -61,26 +66,30 @@ export type BasePurchase = {
   vehicle_name: string;
   purchase_price: number;
   purchase_date: string;
-  seller_name?: string;
-  seller_location?: string;
-  vehicle_condition?: string;
-  notes?: string;
+  seller_name?: string | null;
+  seller_location?: string | null;
+  vehicle_condition?: string | null;
+  notes?: string | null;
   created_at: string;
   user_id: string;
 };
 
+export type BasePurchaseInput = Omit<BasePurchase, 'id' | 'created_at' | 'user_id'>;
+
 export type TimeEntry = {
   id: string;
   date: string;
-  start_time?: string;
-  end_time?: string;
+  start_time?: string | null;
+  end_time?: string | null;
   duration_minutes: number;
   task_description: string;
   category: string;
-  notes?: string;
+  notes?: string | null;
   created_at: string;
   user_id: string;
 };
+
+export type TimeEntryInput = Omit<TimeEntry, 'id' | 'created_at' | 'user_id'>;
 
 export type Document = {
   id: string;

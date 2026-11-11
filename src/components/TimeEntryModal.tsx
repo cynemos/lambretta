@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { TimeEntry } from '../lib/supabase';
+import type { TimeEntry, TimeEntryInput } from '../lib/supabase';
 import { X, Save, Clock, Calendar, Tag, FileText, Loader2 } from 'lucide-react';
 
 interface TimeEntryModalProps {
   timeEntry?: TimeEntry | null;
   isOpen: boolean;
   onClose: () => void;
-  onSave: (entryData: any) => Promise<{ success: boolean; error?: string }>;
+  onSave: (entryData: TimeEntryInput) => Promise<{ success: boolean; error?: string }>;
 }
 
 const CATEGORIES = [

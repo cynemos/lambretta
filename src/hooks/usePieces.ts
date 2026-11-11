@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { supabase, type Piece } from '../lib/supabase';
 import { useBasePurchase } from './useBasePurchase';
+import type { AdministrativeCharge } from './useAdministrativeCharges';
 
 export function usePieces() {
   const [pieces, setPieces] = useState<Piece[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [administrativeCharges, setAdministrativeCharges] = useState<any[]>([]);
+  const [administrativeCharges, setAdministrativeCharges] = useState<AdministrativeCharge[]>([]);
   const { basePurchase } = useBasePurchase();
 
   const fetchPieces = async () => {

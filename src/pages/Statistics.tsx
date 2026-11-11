@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { BarChart3, TrendingUp, Euro, Clock, Package, PieChart, Plus, Trash2, FileText } from 'lucide-react';
 import { useAdministrativeCharges } from '../hooks/useAdministrativeCharges';

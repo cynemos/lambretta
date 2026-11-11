@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 
 export interface InventoryComment {
@@ -14,6 +14,24 @@ export interface InventoryComment {
 export function useInventoryComments(partId: string) {
   const [comments, setComments] = useState<InventoryComment[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const loadComments = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('inventory_comments')
+        .select('*')
+        .eq('part_id', partId)
+        .eq('is_approved', true)
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+      setComments(data || []);
+    } catch (error) {
+      console.error('Erreur lors du chargement des commentaires:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [partId]);
 
   useEffect(() => {
     loadComments();
@@ -37,25 +55,7 @@ export function useInventoryComments(partId: string) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [partId]);
-
-  const loadComments = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('inventory_comments')
-        .select('*')
-        .eq('part_id', partId)
-        .eq('is_approved', true)
-        .order('created_at', { ascending: true });
-
-      if (error) throw error;
-      setComments(data || []);
-    } catch (error) {
-      console.error('Erreur lors du chargement des commentaires:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [partId, loadComments]);
 
   const addComment = async (authorName: string, content: string, authorEmail?: string) => {
     try {

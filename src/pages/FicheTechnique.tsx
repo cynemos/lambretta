@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FileText, Calendar, MapPin, Users, Wrench, Hash, Car, Factory, Award, Info, Camera, CreditCard as Edit } from 'lucide-react';
 import { useVehicleInfo } from '../hooks/useVehicleInfo';
 import { useOwnerHistory } from '../hooks/useOwnerHistory';

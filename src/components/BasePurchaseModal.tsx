@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { BasePurchase } from '../lib/supabase';
+import type { BasePurchase, BasePurchaseInput } from '../lib/supabase';
 import { X, Save, Car, Euro, Calendar, User, MapPin, FileText, Loader2 } from 'lucide-react';
 
 interface BasePurchaseModalProps {
   basePurchase?: BasePurchase | null;
   isOpen: boolean;
   onClose: () => void;
-  onSave: (purchaseData: any) => Promise<{ success: boolean; error?: string }>;
+  onSave: (purchaseData: BasePurchaseInput) => Promise<{ success: boolean; error?: string }>;
 }
 
 const VEHICLE_CONDITIONS = [

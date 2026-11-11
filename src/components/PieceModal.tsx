@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Piece } from '../lib/supabase';
+import type { Piece, PieceInput } from '../lib/supabase';
 import { supabase } from '../lib/supabase';
 import { X, Save, Package, Tag, Euro, Calendar, User, FileText, Loader2 } from 'lucide-react';
 
@@ -7,7 +7,7 @@ interface PieceModalProps {
   piece?: Piece | null;
   isOpen: boolean;
   onClose: () => void;
-  onSave: (pieceData: any) => Promise<{ success: boolean; error?: string }>;
+  onSave: (pieceData: PieceInput) => Promise<{ success: boolean; error?: string }>;
 }
 
 interface InventoryPart {
@@ -47,7 +47,6 @@ export function PieceModal({ piece, isOpen, onClose, onSave }: PieceModalProps) 
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [inventoryParts, setInventoryParts] = useState<InventoryPart[]>([]);
-  const [loadingInventory, setLoadingInventory] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -64,7 +63,7 @@ export function PieceModal({ piece, isOpen, onClose, onSave }: PieceModalProps) 
         date_achat: piece.date_achat,
         date_installation: piece.date_installation || '',
         notes: piece.notes || '',
-        inventory_part_id: (piece as any).inventory_part_id || '',
+        inventory_part_id: piece.inventory_part_id || '',
       });
     } else {
       setFormData({
@@ -83,7 +82,6 @@ export function PieceModal({ piece, isOpen, onClose, onSave }: PieceModalProps) 
   }, [piece, isOpen]);
 
   const loadInventoryParts = async () => {
-    setLoadingInventory(true);
     try {
       const { data, error } = await supabase
         .from('scooter_parts_inventory')
@@ -96,8 +94,6 @@ export function PieceModal({ piece, isOpen, onClose, onSave }: PieceModalProps) 
       setInventoryParts(data || []);
     } catch (error) {
       console.error('Erreur lors du chargement des pièces d\'inventaire:', error);
-    } finally {
-      setLoadingInventory(false);
     }
   };
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import { Publication } from '../lib/supabase';
 import { LikeButton } from './LikeButton';
 import { Calendar, MessageSquare, CreditCard as Edit, Trash2 } from 'lucide-react';

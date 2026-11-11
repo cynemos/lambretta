@@ -100,6 +100,7 @@ Chaque commit porte un numéro de version, dans `package.json` et en étiquette 
 
 | Version | Contenu |
 |---|---|
+| **1.2.2** | Ménage du code : plus aucune erreur de typage ni de lint, types précis à la place des `any` ; correction de la fenêtre de modification d'une publication (risque de plantage, texte d'une autre publication) |
 | **1.2.1** | Cartes de chiffres et barres de filtres qui débordaient sur ordinateur et tablette ; ce README |
 | **1.2.0** | Mise en page responsive (en-tête sur deux lignes, menu mobile), lettre d'introduction mise en forme, numéro de version affiché |
 | **1.1.0** | Sécurité : écriture réservée à l'administrateur, commentaires des visiteurs réparés, « j'aime » protégés ; corrections du graphique de budget, des durées et du filtre par date |

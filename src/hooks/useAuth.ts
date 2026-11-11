@@ -12,7 +12,7 @@ export function useAuth() {
 
     const getSession = async () => {
       const timeoutId = setTimeout(() => {
-        if (isMounted && loading) {
+        if (isMounted) {
           console.warn('Auth timeout - forcing loading to false');
           setLoading(false);
         }
@@ -69,7 +69,7 @@ export function useAuth() {
     getSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      (_event, session) => {
         if (!isMounted) return;
 
         setUser(session?.user ?? null);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
-import { Plus, CreditCard as Edit2, Trash2, Search, Filter, Package, AlertCircle, CheckCircle, Clock, X, MessageCircle, ChevronDown, ChevronUp, Camera } from 'lucide-react';
+import { Plus, CreditCard as Edit2, Trash2, Search, Package, X, MessageCircle, ChevronDown, ChevronUp, Camera } from 'lucide-react';
 import { InventoryCommentSection } from '../components/InventoryCommentSection';
 import { PhotoGallery } from '../components/PhotoGallery';
 
@@ -21,6 +21,7 @@ interface Part {
   created_at: string;
   piece_commandee_id: string | null;
   photos: string[] | null;
+  piece_commandee?: PurchasedPiece | null;
 }
 
 interface PurchasedPiece {
@@ -404,18 +405,18 @@ export function Inventory() {
                       </p>
                     )}
 
-                    {(part as any).piece_commandee && (
+                    {part.piece_commandee && (
                       <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
                         <p className="text-sm font-semibold text-green-900 mb-2">Pièce commandée</p>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-green-800">
-                          <p><span className="font-medium">Prix réel:</span> {(part as any).piece_commandee.prix}€</p>
-                          {(part as any).piece_commandee.fournisseur && (
-                            <p><span className="font-medium">Fournisseur:</span> {(part as any).piece_commandee.fournisseur}</p>
+                          <p><span className="font-medium">Prix réel:</span> {part.piece_commandee.prix}€</p>
+                          {part.piece_commandee.fournisseur && (
+                            <p><span className="font-medium">Fournisseur:</span> {part.piece_commandee.fournisseur}</p>
                           )}
-                          <p><span className="font-medium">Acheté le:</span> {new Date((part as any).piece_commandee.date_achat).toLocaleDateString('fr-FR')}</p>
-                          <p><span className="font-medium">État:</span> {(part as any).piece_commandee.etat}</p>
-                          {(part as any).piece_commandee.date_installation && (
-                            <p className="col-span-2"><span className="font-medium">Installé le:</span> {new Date((part as any).piece_commandee.date_installation).toLocaleDateString('fr-FR')}</p>
+                          <p><span className="font-medium">Acheté le:</span> {new Date(part.piece_commandee.date_achat).toLocaleDateString('fr-FR')}</p>
+                          <p><span className="font-medium">État:</span> {part.piece_commandee.etat}</p>
+                          {part.piece_commandee.date_installation && (
+                            <p className="col-span-2"><span className="font-medium">Installé le:</span> {new Date(part.piece_commandee.date_installation).toLocaleDateString('fr-FR')}</p>
                           )}
                         </div>
                       </div>

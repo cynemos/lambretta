@@ -1,20 +1,16 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { useBeforeAfter } from '../hooks/useBeforeAfter';
 import type { BeforeAfter } from '../lib/supabase';
 import {
-  ArrowRight,
   Loader2,
   Trash2,
-  CreditCard as Edit,
-  Camera,
   ImageOff,
 } from 'lucide-react';
 
 export function BeforeAfter() {
   const { profile } = useAuth();
   const { items, loading, deleteItem } = useBeforeAfter();
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
 
   const isAdmin = profile?.is_admin === true;
@@ -60,8 +56,6 @@ export function BeforeAfter() {
             <article
               key={item.id}
               className="bg-white rounded-2xl border-2 border-amber-200 shadow-lg overflow-hidden"
-              onMouseEnter={() => setHoveredId(item.id)}
-              onMouseLeave={() => setHoveredId(null)}
             >
               {/* Titre */}
               <div className="px-6 pt-5 pb-3">

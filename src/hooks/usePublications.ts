@@ -98,7 +98,7 @@ export function usePublications() {
     file?: File
   ) => {
     try {
-      let updateData: any = { commentaire };
+      const updateData: Partial<Pick<Publication, 'commentaire' | 'media_url' | 'media_type'>> = { commentaire };
 
       // Si un nouveau fichier est fourni, l'uploader
       if (file) {

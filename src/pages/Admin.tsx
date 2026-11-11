@@ -20,7 +20,7 @@ type AdminTab = 'timeline' | 'before-after';
 export function Admin() {
   const { user } = useAuth();
   const { addPublication } = usePublications();
-  const { items: beforeAfterItems, addItem: addBeforeAfter, loading: baLoading } = useBeforeAfter();
+  const { items: beforeAfterItems, addItem: addBeforeAfter } = useBeforeAfter();
 
   const [activeTab, setActiveTab] = useState<AdminTab>('timeline');
 

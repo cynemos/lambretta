@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useTimeTracking } from '../hooks/useTimeTracking';
 import { useAuth } from '../hooks/useAuth';
 import { TimeEntryModal } from '../components/TimeEntryModal';
-import { Clock, Plus, CreditCard as Edit, Trash2, Calendar, BarChart3, Loader2, Filter, Search } from 'lucide-react';
-import { TimeEntry } from '../lib/supabase';
+import { Clock, Plus, CreditCard as Edit, Trash2, Calendar, BarChart3, Loader2, Search } from 'lucide-react';
+import type { TimeEntry, TimeEntryInput } from '../lib/supabase';
 
 export function TimeTracking() {
   const { user, isAdmin } = useAuth();
@@ -35,7 +35,7 @@ export function TimeTracking() {
     setShowModal(true);
   };
 
-  const handleSave = async (entryData: any) => {
+  const handleSave = async (entryData: TimeEntryInput) => {
     if (!user) return { success: false, error: 'Non authentifié' };
 
     const dataWithUser = { ...entryData, user_id: user.id };

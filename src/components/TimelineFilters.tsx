@@ -1,4 +1,3 @@
-import React from 'react';
 import { Search, Calendar, Filter, X } from 'lucide-react';
 
 interface TimelineFiltersProps {

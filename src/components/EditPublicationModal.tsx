@@ -9,11 +9,20 @@ interface EditPublicationModalProps {
   onSave: (commentaire: string, file?: File) => Promise<{ success: boolean; error?: string }>;
 }
 
+// Les hooks React doivent être appelés à chaque rendu, dans le même ordre :
+// on fait le test « fermé » ici, et le formulaire (avec son état) vit dans un
+// composant séparé, recréé pour chaque publication grâce à la clé.
 export function EditPublicationModal({ publication, isOpen, onClose, onSave }: EditPublicationModalProps) {
-  // Retourner null si le modal est fermé ou publication non définie
   if (!isOpen || !publication) return null;
+  return <EditPublicationForm key={publication.id} publication={publication} onClose={onClose} onSave={onSave} />;
+}
 
-  const [commentaire, setCommentaire] = useState(publication?.commentaire || '');
+function EditPublicationForm({ publication, onClose, onSave }: {
+  publication: Publication;
+  onClose: () => void;
+  onSave: EditPublicationModalProps['onSave'];
+}) {
+  const [commentaire, setCommentaire] = useState(publication.commentaire || '');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);

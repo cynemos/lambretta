@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { MessageCircle, Send, Trash2, CreditCard as Edit, Check, X } from 'lucide-react';
 import { useComments } from '../hooks/useComments';
 import { useAuth } from '../hooks/useAuth';
+import type { Comment } from '../lib/supabase';
 
 interface CommentSectionProps {
   publicationId: string;
@@ -9,7 +10,7 @@ interface CommentSectionProps {
 
 export default function CommentSection({ publicationId }: CommentSectionProps) {
   const { comments, loading, addComment, updateComment, deleteComment } = useComments(publicationId);
-  const { user, profile } = useAuth();
+  const { profile } = useAuth();
   const [showForm, setShowForm] = useState(false);
   const [editingComment, setEditingComment] = useState<string | null>(null);
   const [editContent, setEditContent] = useState('');
@@ -39,7 +40,7 @@ export default function CommentSection({ publicationId }: CommentSectionProps) {
     }
   };
 
-  const handleEdit = (comment: any) => {
+  const handleEdit = (comment: Comment) => {
     setEditingComment(comment.id);
     setEditContent(comment.content);
   };
@@ -76,7 +77,7 @@ export default function CommentSection({ publicationId }: CommentSectionProps) {
   };
 
   // Fonction pour vérifier si l'utilisateur peut modifier un commentaire
-  const canEditComment = (comment: any) => {
+  const canEditComment = () => {
     // Les admins peuvent modifier tous les commentaires
     if (profile?.is_admin) return true;
     
@@ -128,7 +129,7 @@ export default function CommentSection({ publicationId }: CommentSectionProps) {
                     </div>
                     {profile?.is_admin && (
                       <div className="flex gap-1">
-                        {canEditComment(comment) && editingComment !== comment.id && (
+                        {canEditComment() && editingComment !== comment.id && (
                           <button
                             onClick={() => handleEdit(comment)}
                             className="text-amber-500 hover:text-amber-700 p-1"
