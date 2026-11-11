@@ -42,7 +42,9 @@ src/
 ├── lib/supabase.ts    Connexion à Supabase et types des tables
 ├── pages/             Une page par rubrique, plus Admin et Login
 public/                Icônes et image d'aperçu pour les partages (og-image.jpg)
-supabase/migrations/   Évolutions successives de la base (tables, règles d'accès)
+supabase/migrations/   Schéma de référence de la base (tables, fonctions, règles d'accès, stockage)
+supabase/archives/     Anciennes migrations de Bolt, incomplètes (historique)
+scripts/               Sauvegarde automatique et montage du NAS
 ```
 
 ## Lancer le site sur son ordinateur
@@ -72,20 +74,33 @@ npm run lint      # vérification du code
 
 ## Sécurité
 
-Toutes les tables sont protégées par les règles d'accès de PostgreSQL (*Row Level Security*), définies dans `supabase/migrations/20261111180000_securite_admin.sql` :
+Toutes les tables sont protégées par les règles d'accès de PostgreSQL (*Row Level Security*), décrites dans le schéma de référence `supabase/migrations/20261111210000_schema_reference.sql` :
 
 - **Lecture publique** de tout le contenu affiché sur le site.
 - **Écriture réservée à l'administrateur**, c'est-à-dire aux comptes dont le profil porte `is_admin = true`. Être simplement connecté ne suffit pas.
 - **Commentaires** ouverts aux visiteurs, avec des limites de taille ; la modération est réservée à l'administrateur.
 - **« J'aime »** gérés uniquement par deux fonctions (`like_status`, `toggle_like`) : un visiteur ne peut pas retirer le « j'aime » d'un autre.
 - **Inscriptions fermées** côté Supabase : on ne peut pas se créer de compte depuis le site.
+- Toute nouvelle table reçoit automatiquement cette protection (déclencheur `ensure_rls`).
 - Côté serveur, seuls les services utilisés par le site (`rest`, `auth`, `storage`, `realtime`) sont exposés publiquement ; les outils d'administration de Supabase ne le sont pas.
+- Sur le réseau local aussi, les ports de Supabase (54320 à 54329 : API, base, Studio…) sont fermés par un pare-feu ; seul le serveur lui-même y accède (règles réappliquées à chaque démarrage, voir [`scripts/installer_pare_feu.sh`](scripts/installer_pare_feu.sh)). Le tableau de bord **Studio** s'ouvre par un tunnel SSH :
+
+  ```bash
+  ssh -L 54323:localhost:54323 -L 54321:localhost:54321 <utilisateur>@<serveur>
+  # puis ouvrir http://localhost:54323 dans le navigateur
+  ```
 
 Pour donner les droits d'administrateur à un compte existant, en SQL sur le serveur :
 
 ```sql
 UPDATE public.profiles SET is_admin = true WHERE id = '<identifiant du compte>';
 ```
+
+## Base de données
+
+Le fichier [`supabase/migrations/20261111210000_schema_reference.sql`](supabase/migrations/20261111210000_schema_reference.sql) reconstruit toute la structure attendue par le site dans une base Supabase neuve : 15 tables, fonctions, 55 règles d'accès, espaces de stockage. Il a été vérifié en reconstruisant une base vierge puis en la comparant à la base en service. Il ne contient aucune donnée (voir **Sauvegardes**).
+
+Toute évolution future de la base s'ajoute dans un nouveau fichier `supabase/migrations/AAAAMMJJHHMMSS_description.sql`, appliqué sur le serveur après une sauvegarde.
 
 ## Mise en ligne
 
@@ -138,6 +153,7 @@ Chaque commit porte un numéro de version, dans `package.json` et en étiquette 
 
 | Version | Contenu |
 |---|---|
+| **1.3.1** | Schéma de référence de la base dans le dépôt (vérifié par reconstruction) ; ports de Supabase fermés au réseau local, Studio par tunnel SSH |
 | **1.3.0** | Une adresse par page (lien direct, bouton retour, titre d'onglet) ; aperçu de partage et icônes ; timeline beaucoup plus légère : 7 requêtes à l'ouverture au lieu de 182, photos chargées au fil du défilement |
 | **1.2.4** | Alertes de sauvegarde sur téléphone (ntfy) : échec avec sa cause, NAS injoignable, bilan chaque lundi |
 | **1.2.3** | Sauvegardes automatiques chaque nuit (base, fichiers, configurations) vers le NAS, vérifiées et testées en restauration ; scripts dans `scripts/` |
