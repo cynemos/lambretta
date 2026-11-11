@@ -10,16 +10,16 @@ La consultation est libre : la famille et les amis peuvent suivre l'avancement, 
 
 ## Rubriques
 
-| Rubrique | Contenu |
+| Rubrique (adresse) | Contenu |
 |---|---|
-| **Timeline** | Les étapes de la restauration en photos, vidéos ou liens YouTube, avec recherche par mot-clé et par date, « j'aime » et commentaires |
-| **Fiche technique** | Caractéristiques du véhicule et historique des propriétaires |
-| **Pièces** | Achat du véhicule de base, pièces achetées (neuves ou d'occasion), coûts par catégorie |
-| **Temps** | Sessions de travail, durée par catégorie (démontage, peinture, remontage…) |
-| **Inventaire** | Pièces démontées : état constaté, action prévue, priorité, photos, commentaires |
-| **Statistiques** | Temps total, budget cumulé mois par mois, répartition neuf / occasion, charges administratives |
-| **Documents** | Factures et documents administratifs |
-| **Avant / Après** | Photos comparatives de la transformation |
+| **Timeline** (`/`) | Les étapes de la restauration en photos, vidéos ou liens YouTube, avec recherche par mot-clé et par date, « j'aime » et commentaires |
+| **Fiche technique** (`/fiche-technique`) | Caractéristiques du véhicule et historique des propriétaires |
+| **Pièces** (`/pieces`) | Achat du véhicule de base, pièces achetées (neuves ou d'occasion), coûts par catégorie |
+| **Temps** (`/temps`) | Sessions de travail, durée par catégorie (démontage, peinture, remontage…) |
+| **Inventaire** (`/inventaire`) | Pièces démontées : état constaté, action prévue, priorité, photos, commentaires |
+| **Statistiques** (`/statistiques`) | Temps total, budget cumulé mois par mois, répartition neuf / occasion, charges administratives |
+| **Documents** (`/documents`) | Factures et documents administratifs |
+| **Avant / Après** (`/avant-apres`) | Photos comparatives de la transformation |
 
 ## Technique
 
@@ -37,8 +37,11 @@ src/
 ├── App.tsx            Choix de la page affichée
 ├── components/        En-tête et pied de page (Layout), cartes, fenêtres de saisie…
 ├── hooks/             Accès aux données Supabase, une fonction par sujet (usePieces, useLikes…)
+├── contexts/          Session partagée par tout le site (AuthProvider)
+├── lib/routes.ts      Adresse et titre de chaque page
 ├── lib/supabase.ts    Connexion à Supabase et types des tables
-└── pages/             Une page par rubrique, plus Admin et Login
+├── pages/             Une page par rubrique, plus Admin et Login
+public/                Icônes et image d'aperçu pour les partages (og-image.jpg)
 supabase/migrations/   Évolutions successives de la base (tables, règles d'accès)
 ```
 
@@ -135,6 +138,7 @@ Chaque commit porte un numéro de version, dans `package.json` et en étiquette 
 
 | Version | Contenu |
 |---|---|
+| **1.3.0** | Une adresse par page (lien direct, bouton retour, titre d'onglet) ; aperçu de partage et icônes ; timeline beaucoup plus légère : 7 requêtes à l'ouverture au lieu de 182, photos chargées au fil du défilement |
 | **1.2.4** | Alertes de sauvegarde sur téléphone (ntfy) : échec avec sa cause, NAS injoignable, bilan chaque lundi |
 | **1.2.3** | Sauvegardes automatiques chaque nuit (base, fichiers, configurations) vers le NAS, vérifiées et testées en restauration ; scripts dans `scripts/` |
 | **1.2.2** | Ménage du code : plus aucune erreur de typage ni de lint, types précis à la place des `any` ; correction de la fenêtre de modification d'une publication (risque de plantage, texte d'une autre publication) |

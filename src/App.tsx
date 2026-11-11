@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from './hooks/useAuth';
-import { Layout, type Page } from './components/Layout';
+import { Layout } from './components/Layout';
+import { type Page, pageFromPath, pathFor, titleFor } from './lib/routes';
 import { Timeline } from './pages/Timeline';
 import { Admin } from './pages/Admin';
 import { Pieces } from './pages/Pieces';
@@ -15,20 +16,34 @@ import { Loader2 } from 'lucide-react';
 
 function App() {
   const { user, isAdmin, loading } = useAuth();
-  const [currentPage, setCurrentPage] = useState<Page>('timeline');
+  // La page affichée suit l'adresse : lien direct, rechargement et bouton « retour » fonctionnent
+  const [currentPage, setCurrentPage] = useState<Page>(() => pageFromPath(window.location.pathname));
 
-  // Rediriger automatiquement vers timeline si non-admin tente d'accéder à admin
-  const handlePageChange = (page: Page) => {
-    if (page === 'admin' && !user) {
-      setCurrentPage('login');
-    } else {
-      setCurrentPage(page);
+  const navigate = (page: Page) => {
+    setCurrentPage(page);
+    if (window.location.pathname !== pathFor(page)) {
+      window.history.pushState({ page }, '', pathFor(page));
     }
+  };
+
+  useEffect(() => {
+    const onPopState = () => setCurrentPage(pageFromPath(window.location.pathname));
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, []);
+
+  useEffect(() => {
+    document.title = titleFor(currentPage);
+  }, [currentPage]);
+
+  // Un visiteur non connecté qui demande l'administration arrive sur la connexion
+  const handlePageChange = (page: Page) => {
+    navigate(page === 'admin' && !user ? 'login' : page);
   };
 
   // Redirection après connexion réussie
   const handleLoginSuccess = () => {
-    setCurrentPage('admin');
+    navigate('admin');
   };
 
   if (loading) {

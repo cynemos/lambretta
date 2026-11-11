@@ -7,9 +7,13 @@ interface PublicationCardProps {
   isAdmin?: boolean;
   onEdit?: (publication: Publication) => void;
   onDelete?: (publicationId: string) => void;
+  likesCount: number;
+  isLiked: boolean;
+  likeBusy?: boolean;
+  onToggleLike: () => void;
 }
 
-export function PublicationCard({ publication, isAdmin, onEdit, onDelete }: PublicationCardProps) {
+export function PublicationCard({ publication, isAdmin, onEdit, onDelete, likesCount, isLiked, likeBusy, onToggleLike }: PublicationCardProps) {
   const formatDate = (dateString: string) => {
     return new Intl.DateTimeFormat('fr-FR', {
       year: 'numeric',
@@ -34,7 +38,7 @@ export function PublicationCard({ publication, isAdmin, onEdit, onDelete }: Publ
           
           <div className="flex items-center space-x-2">
             {/* Bouton J'aime - toujours visible */}
-            <LikeButton publicationId={publication.id} />
+            <LikeButton likesCount={likesCount} isLiked={isLiked} loading={likeBusy} onToggle={onToggleLike} />
             
             {/* Boutons admin - seulement si admin */}
             {isAdmin && (
@@ -64,6 +68,9 @@ export function PublicationCard({ publication, isAdmin, onEdit, onDelete }: Publ
         <div className="border-4 border-amber-200 rounded-lg overflow-hidden shadow-md bg-white">
           {publication.media_type === 'image' ? (
             <img
+              // « loading » avant « src » : sinon certains navigateurs lancent le téléchargement tout de suite
+              loading="lazy"
+              decoding="async"
               src={publication.media_url}
               alt="Étape de restauration"
               className="w-full h-auto object-cover max-h-96"
@@ -75,6 +82,7 @@ export function PublicationCard({ publication, isAdmin, onEdit, onDelete }: Publ
                 height="100%"
                 src={`https://www.youtube.com/embed/${publication.media_url}`}
                 title="Vidéo YouTube"
+                loading="lazy"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen

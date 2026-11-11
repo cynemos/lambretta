@@ -251,6 +251,8 @@ export function FicheTechnique() {
   <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg p-8 border-4 border-amber-200 shadow-inner">
     <div className="aspect-[4/3] rounded-lg border-2 border-dashed border-gray-400 overflow-hidden">
       <img
+        loading="lazy"
+        decoding="async"
         src="https://i28.servimg.com/u/f28/12/40/02/10/whatsa18.jpg"
         alt="Papa à 17 ans avec son Lambretta"
         className="object-cover w-full h-full"
@@ -268,6 +270,8 @@ export function FicheTechnique() {
   <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg p-8 border-4 border-amber-200 shadow-inner">
     <div className="aspect-[4/3] rounded-lg border-2 border-dashed border-gray-400 overflow-hidden">
       <img
+        loading="lazy"
+        decoding="async"
         src="https://i28.servimg.com/u/f28/12/40/02/10/whatsa15.jpg"
         alt="Souvenirs de jeunesse"
         className="object-cover w-full h-full"

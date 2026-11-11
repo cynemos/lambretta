@@ -11,61 +11,57 @@ const getUserFingerprint = (): string => {
   return fingerprint;
 };
 
-// La table « likes » n'est plus accessible directement : tout passe par les
-// fonctions like_status et toggle_like (voir la migration securite_admin).
-export function useLikes(publicationId: string) {
-  const [likesCount, setLikesCount] = useState(0);
-  const [isLiked, setIsLiked] = useState(false);
-  const [loading, setLoading] = useState(true);
+export type LikeInfo = { count: number; liked: boolean };
 
-  const userFingerprint = getUserFingerprint();
+// « J'aime » de toute la timeline en une seule requête (fonction likes_summary).
+// La table likes n'est pas lisible directement : les empreintes restent privées.
+export function useLikesSummary() {
+  const [likes, setLikes] = useState<Record<string, LikeInfo>>({});
+  const [busy, setBusy] = useState<string | null>(null);
+  const fingerprint = getUserFingerprint();
 
-  const fetchLikes = useCallback(async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .rpc('like_status', { p_publication_id: publicationId, p_fingerprint: userFingerprint })
-        .single<{ likes_count: number; is_liked: boolean }>();
-
-      if (error) throw error;
-
-      setLikesCount(Number(data?.likes_count ?? 0));
-      setIsLiked(!!data?.is_liked);
-    } catch (err) {
-      console.error('Erreur lors du chargement des likes:', err);
-    } finally {
-      setLoading(false);
+  const refresh = useCallback(async () => {
+    const { data, error } = await supabase.rpc('likes_summary', { p_fingerprint: fingerprint });
+    if (error) {
+      console.error('Erreur lors du chargement des likes:', error);
+      return;
     }
-  }, [publicationId, userFingerprint]);
+    const map: Record<string, LikeInfo> = {};
+    for (const row of (data ?? []) as { publication_id: string; likes_count: number; is_liked: boolean }[]) {
+      map[row.publication_id] = { count: Number(row.likes_count), liked: row.is_liked };
+    }
+    setLikes(map);
+  }, [fingerprint]);
 
   useEffect(() => {
-    if (publicationId) {
-      fetchLikes();
-    }
-  }, [publicationId, fetchLikes]);
+    refresh();
+  }, [refresh]);
 
-  const toggleLike = async () => {
+  const toggleLike = async (publicationId: string) => {
+    if (busy) return;
+    setBusy(publicationId);
     try {
       const { data: nowLiked, error } = await supabase.rpc('toggle_like', {
         p_publication_id: publicationId,
-        p_fingerprint: userFingerprint,
+        p_fingerprint: fingerprint,
       });
-
       if (error) throw error;
-
-      setIsLiked(!!nowLiked);
-      setLikesCount(prev => Math.max(0, prev + (nowLiked ? 1 : -1)));
+      setLikes(prev => {
+        const current = prev[publicationId] ?? { count: 0, liked: false };
+        return {
+          ...prev,
+          [publicationId]: { liked: !!nowLiked, count: Math.max(0, current.count + (nowLiked ? 1 : -1)) },
+        };
+      });
     } catch (err) {
       console.error('Erreur lors du toggle like:', err);
-      await fetchLikes();
+      await refresh();
+    } finally {
+      setBusy(null);
     }
   };
 
-  return {
-    likesCount,
-    isLiked,
-    loading,
-    toggleLike,
-    refreshLikes: fetchLikes,
-  };
+  const likeFor = (publicationId: string): LikeInfo => likes[publicationId] ?? { count: 0, liked: false };
+
+  return { likeFor, toggleLike, busy };
 }

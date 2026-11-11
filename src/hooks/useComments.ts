@@ -1,107 +1,76 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase, type Comment } from '../lib/supabase';
 
-export function useComments(publicationId: string) {
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+type Result = { success: boolean; error?: string };
+const erreur = (err: unknown, defaut: string): Result => ({
+  success: false,
+  error: err instanceof Error ? err.message : defaut,
+});
 
-  const fetchComments = useCallback(async () => {
+// Commentaires de toute la timeline en une seule requête, rangés par publication.
+// Avant : une requête par publication (59 pour afficher la timeline).
+export function useAllComments() {
+  const [byPublication, setByPublication] = useState<Record<string, Comment[]>>({});
+  const [loading, setLoading] = useState(true);
+
+  const refresh = useCallback(async () => {
     try {
-      setLoading(true);
       const { data, error } = await supabase
         .from('comments')
         .select('*')
-        .eq('publication_id', publicationId)
         .eq('is_approved', true)
         .order('created_at', { ascending: true });
-
       if (error) throw error;
-
-      setComments(data || []);
+      const map: Record<string, Comment[]> = {};
+      for (const c of data ?? []) (map[c.publication_id] ??= []).push(c);
+      setByPublication(map);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur lors du chargement');
+      console.error('Erreur lors du chargement des commentaires:', err);
     } finally {
       setLoading(false);
     }
-  }, [publicationId]);
+  }, []);
 
   useEffect(() => {
-    if (publicationId) {
-      fetchComments();
-    }
-  }, [publicationId, fetchComments]);
+    refresh();
+  }, [refresh]);
 
-  const addComment = async (authorName: string, authorEmail: string, content: string) => {
+  const addComment = async (publicationId: string, authorName: string, content: string): Promise<Result> => {
     try {
-      const { error } = await supabase
-        .from('comments')
-        .insert([
-          {
-            publication_id: publicationId,
-            author_name: authorName,
-            author_email: authorEmail || '',
-            content: content,
-            is_approved: true
-          }
-        ]);
-
+      const { error } = await supabase.from('comments').insert([
+        { publication_id: publicationId, author_name: authorName, author_email: '', content, is_approved: true },
+      ]);
       if (error) throw error;
-
-      await fetchComments();
+      await refresh();
       return { success: true };
     } catch (err) {
-      return {
-        success: false,
-        error: err instanceof Error ? err.message : 'Erreur lors de l\'ajout du commentaire',
-      };
+      return erreur(err, "Erreur lors de l'ajout du commentaire");
     }
   };
 
-  const updateComment = async (commentId: string, content: string) => {
+  const updateComment = async (commentId: string, content: string): Promise<Result> => {
     try {
-      const { error } = await supabase
-        .from('comments')
-        .update({ content })
-        .eq('id', commentId);
-
+      const { error } = await supabase.from('comments').update({ content }).eq('id', commentId);
       if (error) throw error;
-
-      await fetchComments();
+      await refresh();
       return { success: true };
     } catch (err) {
-      return {
-        success: false,
-        error: err instanceof Error ? err.message : 'Erreur lors de la modification',
-      };
+      return erreur(err, 'Erreur lors de la modification');
     }
   };
-  const deleteComment = async (commentId: string) => {
+
+  const deleteComment = async (commentId: string): Promise<Result> => {
     try {
-      const { error } = await supabase
-        .from('comments')
-        .delete()
-        .eq('id', commentId);
-
+      const { error } = await supabase.from('comments').delete().eq('id', commentId);
       if (error) throw error;
-
-      await fetchComments();
+      await refresh();
       return { success: true };
     } catch (err) {
-      return {
-        success: false,
-        error: err instanceof Error ? err.message : 'Erreur lors de la suppression',
-      };
+      return erreur(err, 'Erreur lors de la suppression');
     }
   };
 
-  return {
-    comments,
-    loading,
-    error,
-    addComment,
-    updateComment,
-    deleteComment,
-    refreshComments: fetchComments,
-  };
+  const commentsFor = (publicationId: string): Comment[] => byPublication[publicationId] ?? [];
+
+  return { commentsFor, loading, addComment, updateComment, deleteComment };
 }

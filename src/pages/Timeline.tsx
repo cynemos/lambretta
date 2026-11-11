@@ -2,6 +2,8 @@ import React from 'react';
 import { useState, useMemo } from 'react';
 import { usePublications } from '../hooks/usePublications';
 import { useAuth } from '../hooks/useAuth';
+import { useAllComments } from '../hooks/useComments';
+import { useLikesSummary } from '../hooks/useLikes';
 import { PublicationCard } from '../components/PublicationCard';
 import { TimelineFilters } from '../components/TimelineFilters';
 import { EditPublicationModal } from '../components/EditPublicationModal';
@@ -12,6 +14,9 @@ import { Publication } from '../lib/supabase';
 export function Timeline() {
   const { isAdmin } = useAuth();
   const { publications, loading, error, updatePublication, deletePublication } = usePublications();
+  // Commentaires et « j'aime » de toutes les publications : 2 requêtes au lieu de 2 par publication
+  const comments = useAllComments();
+  const likes = useLikesSummary();
   const [editingPublication, setEditingPublication] = React.useState<Publication | null>(null);
   const [deleteConfirm, setDeleteConfirm] = React.useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -191,6 +196,10 @@ export function Timeline() {
                 isAdmin={isAdmin}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
+                likesCount={likes.likeFor(publication.id).count}
+                isLiked={likes.likeFor(publication.id).liked}
+                likeBusy={likes.busy === publication.id}
+                onToggleLike={() => likes.toggleLike(publication.id)}
               />
               <p className="text-amber-500 text-sm mt-1">
                 {new Date(publication.created_at).toLocaleDateString('fr-FR', {
@@ -202,7 +211,13 @@ export function Timeline() {
               </p>
 
               {/* 🔹 Affichage de la section des commentaires */}
-              <CommentSection publicationId={publication.id} />
+              <CommentSection
+                comments={comments.commentsFor(publication.id)}
+                loading={comments.loading}
+                onAdd={(name, content) => comments.addComment(publication.id, name, content)}
+                onUpdate={comments.updateComment}
+                onDelete={comments.deleteComment}
+              />
             </div>
           ))}
         </div>

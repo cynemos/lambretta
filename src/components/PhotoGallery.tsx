@@ -141,6 +141,8 @@ export function PhotoGallery({ photos, partId, onPhotosUpdate, canEdit }: PhotoG
             <div key={index} className="relative group">
               <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 border-2 border-amber-200">
                 <img
+                  loading="lazy"
+                  decoding="async"
                   src={photo}
                   alt={`Photo ${index + 1}`}
                   className="w-full h-full object-cover"

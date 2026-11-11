@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { MouseEvent, ReactNode, useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import {
@@ -6,9 +6,9 @@ import {
   ClipboardList, BarChart3, FolderOpen, ArrowLeftRight, Settings,
 } from 'lucide-react';
 
-export type Page =
-  | 'timeline' | 'admin' | 'pieces' | 'fiche-technique' | 'time-tracking'
-  | 'inventory' | 'statistics' | 'documents' | 'before-after' | 'login';
+import { type Page, pathFor } from '../lib/routes';
+
+export type { Page };
 
 interface LayoutProps {
   children: ReactNode;
@@ -42,6 +42,16 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
     window.scrollTo({ top: 0 });
   };
 
+  // Vrais liens (copier l'adresse, ouvrir dans un onglet) ; un clic simple reste instantané
+  const linkProps = (page: Page) => ({
+    href: pathFor(page),
+    onClick: (e: MouseEvent<HTMLAnchorElement>) => {
+      if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      go(page);
+    },
+  });
+
   const handleSignOut = async () => {
     await signOut();
     go('timeline');
@@ -54,10 +64,10 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
     return (
       <>
         {isAdmin && (
-          <button onClick={() => go('admin')} className={`${itemClass(currentPage === 'admin')} ${pad}`}>
+          <a {...linkProps('admin')} className={`${itemClass(currentPage === 'admin')} ${pad}`}>
             <Settings className={icon} />
             <span>Administration</span>
-          </button>
+          </a>
         )}
         {user ? (
           <button onClick={handleSignOut} className={`${itemClass(false)} ${pad}`}>
@@ -65,10 +75,10 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
             <span>Déconnexion</span>
           </button>
         ) : (
-          <button onClick={() => go('login')} className={`${itemClass(currentPage === 'login')} ${pad}`}>
+          <a {...linkProps('login')} className={`${itemClass(currentPage === 'login')} ${pad}`}>
             <User className={icon} />
             <span>Connexion</span>
-          </button>
+          </a>
         )}
       </>
     );
@@ -81,8 +91,8 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
         <div className="max-w-6xl mx-auto px-4">
           {/* Ligne 1 : titre + compte (ordinateur) ou menu (mobile) */}
           <div className="flex items-center justify-between gap-3 py-3">
-            <button
-              onClick={() => go('timeline')}
+            <a
+              {...linkProps('timeline')}
               className="flex items-center gap-3 min-w-0 text-left"
               aria-label="Retour à la timeline"
             >
@@ -97,7 +107,7 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
                   Modèle 1956 · Carnet de bord
                 </span>
               </span>
-            </button>
+            </a>
 
             <div className="hidden lg:flex items-center gap-2 flex-shrink-0">
               {accountButtons('sm')}
@@ -116,15 +126,15 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
           {/* Ligne 2 : navigation (ordinateur) */}
           <nav className="hidden lg:flex flex-wrap justify-center gap-1 pb-3" aria-label="Rubriques">
             {navigationItems.map(({ key, label, icon: Icon }) => (
-              <button
+              <a
                 key={key}
-                onClick={() => go(key)}
+                {...linkProps(key)}
                 className={`${itemClass(currentPage === key)} px-3 py-2 text-sm whitespace-nowrap`}
                 aria-current={currentPage === key ? 'page' : undefined}
               >
                 <Icon className="h-4 w-4" />
                 <span>{label}</span>
-              </button>
+              </a>
             ))}
           </nav>
 
@@ -133,15 +143,15 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
             <nav className="lg:hidden border-t-2 border-amber-200 py-3 relative z-20" aria-label="Rubriques">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
                 {navigationItems.map(({ key, label, icon: Icon }) => (
-                  <button
+                  <a
                     key={key}
-                    onClick={() => go(key)}
+                    {...linkProps(key)}
                     className={`${itemClass(currentPage === key)} px-4 py-3 w-full text-left`}
                     aria-current={currentPage === key ? 'page' : undefined}
                   >
                     <Icon className="h-5 w-5" />
                     <span>{label}</span>
-                  </button>
+                  </a>
                 ))}
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 mt-2 pt-2 border-t-2 border-amber-200">
@@ -170,14 +180,14 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
         <div className="max-w-6xl mx-auto px-4 py-8">
           <nav className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 mb-6" aria-label="Rubriques (pied de page)">
             {navigationItems.map(({ key, label, icon: Icon }) => (
-              <button
+              <a
                 key={key}
-                onClick={() => go(key)}
+                {...linkProps(key)}
                 className={`${itemClass(currentPage === key)} flex-col justify-center gap-1 px-2 py-3 text-xs text-center`}
               >
                 <Icon className="h-5 w-5" />
                 <span>{label}</span>
-              </button>
+              </a>
             ))}
           </nav>
 

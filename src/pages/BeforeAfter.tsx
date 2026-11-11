@@ -100,6 +100,8 @@ export function BeforeAfter() {
                     </div>
                     <div className="border-2 border-red-200 rounded-xl overflow-hidden bg-red-50">
                       <img
+                        loading="lazy"
+                        decoding="async"
                         src={item.before_url}
                         alt={`${item.title} - Avant`}
                         className="w-full h-64 md:h-80 object-cover transition-transform duration-500 group-hover:scale-105"
@@ -114,6 +116,8 @@ export function BeforeAfter() {
                     </div>
                     <div className="border-2 border-emerald-200 rounded-xl overflow-hidden bg-emerald-50">
                       <img
+                        loading="lazy"
+                        decoding="async"
                         src={item.after_url}
                         alt={`${item.title} - Après`}
                         className="w-full h-64 md:h-80 object-cover transition-transform duration-500 group-hover:scale-105"

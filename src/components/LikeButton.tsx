@@ -1,14 +1,16 @@
 import React from 'react';
 import { Heart } from 'lucide-react';
-import { useLikes } from '../hooks/useLikes';
 
+// Les « j'aime » sont chargés une seule fois pour toute la timeline (useLikesSummary)
 interface LikeButtonProps {
-  publicationId: string;
+  likesCount: number;
+  isLiked: boolean;
+  loading?: boolean;
+  onToggle: () => void | Promise<void>;
   className?: string;
 }
 
-export function LikeButton({ publicationId, className = '' }: LikeButtonProps) {
-  const { likesCount, isLiked, loading, toggleLike } = useLikes(publicationId);
+export function LikeButton({ likesCount, isLiked, loading = false, onToggle: toggleLike, className = '' }: LikeButtonProps) {
 
   const handleClick = async (e: React.MouseEvent) => {
     e.preventDefault();

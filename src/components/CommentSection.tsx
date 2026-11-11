@@ -1,15 +1,23 @@
 import React, { useState } from 'react';
 import { MessageCircle, Send, Trash2, CreditCard as Edit, Check, X } from 'lucide-react';
-import { useComments } from '../hooks/useComments';
 import { useAuth } from '../hooks/useAuth';
 import type { Comment } from '../lib/supabase';
 
+type Result = { success: boolean; error?: string };
+
+// Les commentaires sont chargés une seule fois pour toute la timeline (useAllComments)
+// et transmis ici : ce bloc ne fait plus de requête au chargement.
 interface CommentSectionProps {
-  publicationId: string;
+  comments: Comment[];
+  loading: boolean;
+  onAdd: (authorName: string, content: string) => Promise<Result>;
+  onUpdate: (commentId: string, content: string) => Promise<Result>;
+  onDelete: (commentId: string) => Promise<Result>;
 }
 
-export default function CommentSection({ publicationId }: CommentSectionProps) {
-  const { comments, loading, addComment, updateComment, deleteComment } = useComments(publicationId);
+export default function CommentSection({
+  comments, loading, onAdd: addComment, onUpdate: updateComment, onDelete: deleteComment,
+}: CommentSectionProps) {
   const { profile } = useAuth();
   const [showForm, setShowForm] = useState(false);
   const [editingComment, setEditingComment] = useState<string | null>(null);
@@ -26,11 +34,7 @@ export default function CommentSection({ publicationId }: CommentSectionProps) {
 
     setSubmitting(true);
     try {
-      await addComment(
-        formData.author_name.trim(),
-        '',
-        formData.content.trim()
-      );
+      await addComment(formData.author_name.trim(), formData.content.trim());
       setFormData({ author_name: '', content: '' });
       setShowForm(false);
     } catch (error) {
