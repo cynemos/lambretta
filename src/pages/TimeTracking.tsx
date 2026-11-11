@@ -6,7 +6,7 @@ import { Clock, Plus, CreditCard as Edit, Trash2, Calendar, BarChart3, Loader2, 
 import { TimeEntry } from '../lib/supabase';
 
 export function TimeTracking() {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { timeEntries, loading, error, addTimeEntry, updateTimeEntry, deleteTimeEntry, statistics } = useTimeTracking();
   const [editingEntry, setEditingEntry] = useState<TimeEntry | null>(null);
   const [showModal, setShowModal] = useState(false);
@@ -211,7 +211,7 @@ export function TimeTracking() {
           </div>
 
           {/* Bouton d'ajout */}
-          {user && (
+          {isAdmin && (
             <button
               onClick={handleAdd}
               className="bg-gradient-to-r from-amber-400 to-orange-400 text-white px-6 py-2 rounded-lg font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all flex items-center space-x-2"
@@ -221,7 +221,7 @@ export function TimeTracking() {
             </button>
           )}
           
-          {!user && (
+          {!isAdmin && (
             <div className="text-amber-700 text-sm italic">
               Mode lecture seule - Connectez-vous pour ajouter des sessions
             </div>
@@ -256,7 +256,7 @@ export function TimeTracking() {
                   </span>
                 </div>
 
-                {user && (
+                {isAdmin && (
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => handleEdit(entry)}

@@ -9,7 +9,7 @@ interface LayoutProps {
 }
 
 export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
-  const { user, signOut } = useAuth();
+  const { user, isAdmin, signOut } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleSignOut = async () => {
@@ -113,17 +113,19 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
 
               {user && (
                 <>
-                  <button
-                    onClick={() => handlePageChange('admin')}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all ${
-                      currentPage === 'admin'
-                        ? 'bg-amber-200 text-amber-900 shadow-md'
-                        : 'text-amber-700 hover:bg-amber-100'
-                    }`}
-                  >
-                    <Camera className="h-4 w-4" />
-                    <span>Administration</span>
-                  </button>
+                  {isAdmin && (
+                    <button
+                      onClick={() => handlePageChange('admin')}
+                      className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all ${
+                        currentPage === 'admin'
+                          ? 'bg-amber-200 text-amber-900 shadow-md'
+                          : 'text-amber-700 hover:bg-amber-100'
+                      }`}
+                    >
+                      <Camera className="h-4 w-4" />
+                      <span>Administration</span>
+                    </button>
+                  )}
 
                   <button
                     onClick={handleSignOut}
@@ -187,17 +189,19 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
 
                 {user && (
                   <>
-                    <button
-                      onClick={() => handlePageChange('admin')}
-                      className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-all text-left ${
-                        currentPage === 'admin'
-                          ? 'bg-amber-200 text-amber-900 shadow-md'
-                          : 'text-amber-700 hover:bg-amber-100'
-                      }`}
-                    >
-                      <Camera className="h-5 w-5" />
-                      <span>Administration</span>
-                    </button>
+                    {isAdmin && (
+                      <button
+                        onClick={() => handlePageChange('admin')}
+                        className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg font-medium transition-all text-left ${
+                          currentPage === 'admin'
+                            ? 'bg-amber-200 text-amber-900 shadow-md'
+                            : 'text-amber-700 hover:bg-amber-100'
+                        }`}
+                      >
+                        <Camera className="h-5 w-5" />
+                        <span>Administration</span>
+                      </button>
+                    )}
 
                     <button
                       onClick={handleSignOut}
@@ -267,17 +271,19 @@ export function Layout({ children, currentPage, onPageChange }: LayoutProps) {
 
           {user && (
             <div className="flex flex-col sm:flex-row justify-center gap-3 mb-6 border-t-2 border-amber-200 pt-4">
-              <button
-                onClick={() => handlePageChange('admin')}
-                className={`flex items-center justify-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all text-sm ${
-                  currentPage === 'admin'
-                    ? 'bg-amber-200 text-amber-900 shadow-md'
-                    : 'text-amber-700 hover:bg-amber-100'
-                }`}
-              >
-                <Camera className="h-4 w-4" />
-                <span>Administration</span>
-              </button>
+              {isAdmin && (
+                <button
+                  onClick={() => handlePageChange('admin')}
+                  className={`flex items-center justify-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all text-sm ${
+                    currentPage === 'admin'
+                      ? 'bg-amber-200 text-amber-900 shadow-md'
+                      : 'text-amber-700 hover:bg-amber-100'
+                  }`}
+                >
+                  <Camera className="h-4 w-4" />
+                  <span>Administration</span>
+                </button>
+              )}
 
               <button
                 onClick={handleSignOut}

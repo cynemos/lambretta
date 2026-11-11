@@ -8,7 +8,7 @@ import { Package, Plus, CreditCard as Edit, Trash2, Euro, Calendar, BarChart3, L
 import { Piece } from '../lib/supabase';
 
 export function Pieces() {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { pieces, loading, error, addPiece, updatePiece, deletePiece, statistics } = usePieces();
   const { 
     basePurchase, 
@@ -188,7 +188,7 @@ export function Pieces() {
             <span>Achat du véhicule de base</span>
           </h3>
           
-          {user && (
+          {isAdmin && (
             <button
               onClick={() => setShowBasePurchaseModal(true)}
               className="bg-gradient-to-r from-blue-400 to-cyan-400 text-white px-4 py-2 rounded-lg font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all flex items-center space-x-2"
@@ -244,7 +244,7 @@ export function Pieces() {
           <div className="text-center py-8">
             <Car className="h-12 w-12 text-blue-300 mx-auto mb-4" />
             <p className="text-blue-700">
-              {user ? 'Enregistrez les détails de l\'achat de votre véhicule' : 'Aucun achat de véhicule enregistré'}
+              {isAdmin ? 'Enregistrez les détails de l\'achat de votre véhicule' : 'Aucun achat de véhicule enregistré'}
             </p>
           </div>
         )}
@@ -306,7 +306,7 @@ export function Pieces() {
           </div>
 
           {/* Bouton d'ajout */}
-          {user && (
+          {isAdmin && (
             <button
               onClick={handleAdd}
               className="bg-gradient-to-r from-amber-400 to-orange-400 text-white px-6 py-2 rounded-lg font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all flex items-center space-x-2"
@@ -316,7 +316,7 @@ export function Pieces() {
             </button>
           )}
           
-          {!user && (
+          {!isAdmin && (
             <div className="text-amber-700 text-sm italic">
               Mode lecture seule - Connectez-vous pour gérer les pièces
             </div>
@@ -355,7 +355,7 @@ export function Pieces() {
                   </span>
                 </div>
 
-                {user && (
+                {isAdmin && (
                   <div className="flex items-center space-x-2">
                     <button
                       onClick={() => handleEdit(piece)}

@@ -16,7 +16,7 @@ import { Loader2 } from 'lucide-react';
 type Page = 'timeline' | 'admin' | 'pieces' | 'fiche-technique' | 'time-tracking' | 'inventory' | 'statistics' | 'documents' | 'before-after' | 'login';
 
 function App() {
-  const { user, loading } = useAuth();
+  const { user, isAdmin, loading } = useAuth();
   const [currentPage, setCurrentPage] = useState<Page>('timeline');
 
   // Rediriger automatiquement vers timeline si non-admin tente d'accéder à admin
@@ -51,7 +51,17 @@ function App() {
       case 'timeline':
         return <Timeline />;
       case 'admin':
-        return user ? <Admin /> : <Login onLoginSuccess={handleLoginSuccess} />;
+        if (isAdmin) return <Admin />;
+        if (user) {
+          return (
+            <div className="bg-amber-50 border-2 border-amber-200 rounded-xl p-8 text-center">
+              <p className="text-amber-900 font-medium">
+                Ce compte n'a pas les droits d'administration.
+              </p>
+            </div>
+          );
+        }
+        return <Login onLoginSuccess={handleLoginSuccess} />;
       case 'pieces':
         return <Pieces />;
       case 'fiche-technique':

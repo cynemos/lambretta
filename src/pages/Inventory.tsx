@@ -36,7 +36,7 @@ interface PurchasedPiece {
 }
 
 export function Inventory() {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [parts, setParts] = useState<Part[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -264,7 +264,7 @@ export function Inventory() {
           <p className="text-amber-700 mt-1">État des lieux des pièces du scooter</p>
         </div>
 
-        {user && (
+        {isAdmin && (
           <button
             onClick={() => {
               resetForm();
@@ -445,7 +445,7 @@ export function Inventory() {
                                 p.id === part.id ? { ...p, photos: newPhotos } : p
                               ));
                             }}
-                            canEdit={!!user}
+                            canEdit={isAdmin}
                           />
                         </div>
                       )}
@@ -471,7 +471,7 @@ export function Inventory() {
                     </div>
                   </div>
 
-                  {user && (
+                  {isAdmin && (
                     <div className="flex md:flex-col gap-2">
                       <button
                         onClick={() => handleEdit(part)}

@@ -126,6 +126,8 @@ export function useAuth() {
   return {
     user,
     profile,
+    // Seul un profil marqué is_admin peut modifier le contenu (être connecté ne suffit pas)
+    isAdmin: profile?.is_admin === true,
     loading,
     signIn,
     signOut,

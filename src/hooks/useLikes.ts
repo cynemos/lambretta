@@ -1,16 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 
-// Générer un identifiant unique pour le visiteur
+// Identifiant aléatoire du visiteur, gardé dans son navigateur
 const getUserFingerprint = (): string => {
   let fingerprint = localStorage.getItem('user_fingerprint');
   if (!fingerprint) {
-    fingerprint = `visitor_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    fingerprint = `visitor_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
     localStorage.setItem('user_fingerprint', fingerprint);
   }
   return fingerprint;
 };
 
+// La table « likes » n'est plus accessible directement : tout passe par les
+// fonctions like_status et toggle_like (voir la migration securite_admin).
 export function useLikes(publicationId: string) {
   const [likesCount, setLikesCount] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
@@ -18,79 +20,43 @@ export function useLikes(publicationId: string) {
 
   const userFingerprint = getUserFingerprint();
 
-  const fetchLikes = async () => {
+  const fetchLikes = useCallback(async () => {
     try {
       setLoading(true);
-      
-      // Compter le nombre total de likes
-      const { count, error: countError } = await supabase
-        .from('likes')
-        .select('*', { count: 'exact', head: true })
-        .eq('publication_id', publicationId);
+      const { data, error } = await supabase
+        .rpc('like_status', { p_publication_id: publicationId, p_fingerprint: userFingerprint })
+        .single<{ likes_count: number; is_liked: boolean }>();
 
-      if (countError) throw countError;
+      if (error) throw error;
 
-      setLikesCount(count || 0);
-
-      // Vérifier si l'utilisateur actuel a liké
-      const { data, error: checkError } = await supabase
-        .from('likes')
-        .select('id')
-        .eq('publication_id', publicationId)
-        .eq('user_fingerprint', userFingerprint)
-        .maybeSingle();
-
-      if (checkError) {
-        throw checkError;
-      }
-
-      setIsLiked(!!data);
+      setLikesCount(Number(data?.likes_count ?? 0));
+      setIsLiked(!!data?.is_liked);
     } catch (err) {
       console.error('Erreur lors du chargement des likes:', err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [publicationId, userFingerprint]);
 
   useEffect(() => {
     if (publicationId) {
       fetchLikes();
     }
-  }, [publicationId]);
+  }, [publicationId, fetchLikes]);
 
   const toggleLike = async () => {
     try {
-      if (isLiked) {
-        // Supprimer le like
-        const { error } = await supabase
-          .from('likes')
-          .delete()
-          .eq('publication_id', publicationId)
-          .eq('user_fingerprint', userFingerprint);
+      const { data: nowLiked, error } = await supabase.rpc('toggle_like', {
+        p_publication_id: publicationId,
+        p_fingerprint: userFingerprint,
+      });
 
-        if (error) throw error;
+      if (error) throw error;
 
-        setIsLiked(false);
-        setLikesCount(prev => Math.max(0, prev - 1));
-      } else {
-        // Ajouter le like
-        const { error } = await supabase
-          .from('likes')
-          .insert([
-            {
-              publication_id: publicationId,
-              user_fingerprint: userFingerprint,
-            }
-          ]);
-
-        if (error) throw error;
-
-        setIsLiked(true);
-        setLikesCount(prev => prev + 1);
-      }
+      setIsLiked(!!nowLiked);
+      setLikesCount(prev => Math.max(0, prev + (nowLiked ? 1 : -1)));
     } catch (err) {
       console.error('Erreur lors du toggle like:', err);
-      // Recharger les données en cas d'erreur
       await fetchLikes();
     }
   };

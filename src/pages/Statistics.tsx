@@ -72,25 +72,32 @@ export function Statistics() {
   const totalUsedPieces = piecesByState['occasion'] || 0;
   const totalPieces = totalNewPieces + totalUsedPieces;
 
+  // Clé triable « AAAA-MM » (date_achat est au format AAAA-MM-JJ) ;
+  // le libellé « mars 2026 » n'est calculé que pour l'affichage.
   const budgetByMonth = pieces.reduce((acc, piece) => {
-    const month = new Date(piece.date_achat).toLocaleDateString('fr-FR', { year: 'numeric', month: 'short' });
-    acc[month] = (acc[month] || 0) + piece.prix;
+    if (!piece.date_achat) return acc;
+    const key = piece.date_achat.slice(0, 7);
+    acc[key] = (acc[key] || 0) + piece.prix;
     return acc;
   }, {} as Record<string, number>);
 
-  const sortedMonths = Object.keys(budgetByMonth).sort((a, b) => {
-    return new Date(a).getTime() - new Date(b).getTime();
-  });
+  const formatMonth = (key: string) => {
+    const [year, month] = key.split('-').map(Number);
+    return new Date(year, month - 1, 1).toLocaleDateString('fr-FR', { year: 'numeric', month: 'short' });
+  };
 
   let cumulativeBudget = 0;
-  const cumulativeBudgetData = sortedMonths.map(month => {
-    cumulativeBudget += budgetByMonth[month];
-    return { month, amount: cumulativeBudget };
+  const cumulativeBudgetData = Object.keys(budgetByMonth).sort().map(key => {
+    cumulativeBudget += budgetByMonth[key];
+    return { month: formatMonth(key), amount: cumulativeBudget };
   });
 
-  const maxTime = Math.max(...Object.values(timeByCategory));
-  const maxCost = Math.max(...Object.values(costByCategory).map(c => c.total));
-  const maxBudget = Math.max(...cumulativeBudgetData.map(d => d.amount));
+  // Math.max() sur une liste vide renvoie -Infinity : on part de 1 pour éviter les divisions absurdes.
+  const maxTime = Math.max(1, ...Object.values(timeByCategory));
+  const maxCost = Math.max(1, ...Object.values(costByCategory).map(c => c.total));
+  const maxBudget = Math.max(1, ...cumulativeBudgetData.map(d => d.amount));
+
+  const formatDuration = (minutes: number) => `${Math.floor(minutes / 60)}h ${minutes % 60}min`;
 
   const totalTime = Object.values(timeByCategory).reduce((sum, time) => sum + time, 0);
   const totalCost = pieces.reduce((sum, piece) => sum + piece.prix, 0);
@@ -118,7 +125,7 @@ export function Statistics() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-600 text-sm font-medium">Temps total</p>
-              <p className="text-3xl font-bold text-gray-900">{Math.round(totalTime / 60)}h</p>
+              <p className="text-3xl font-bold text-gray-900">{Math.floor(totalTime / 60)}h</p>
               <p className="text-sm text-gray-500 mt-1">{totalTime} minutes</p>
             </div>
             <Clock className="h-12 w-12 text-blue-500 opacity-20" />
@@ -163,7 +170,7 @@ export function Statistics() {
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm font-medium text-gray-700 capitalize">{category}</span>
                   <span className="text-sm font-bold text-gray-900">
-                    {Math.round(minutes / 60)}h {minutes % 60}min
+                    {formatDuration(minutes)}
                   </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-3">

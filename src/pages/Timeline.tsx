@@ -6,17 +6,23 @@ import { PublicationCard } from '../components/PublicationCard';
 import { TimelineFilters } from '../components/TimelineFilters';
 import { EditPublicationModal } from '../components/EditPublicationModal';
 import CommentSection from '../components/CommentSection';
-import { Camera, Loader2 } from 'lucide-react';
+import { Camera, Loader2, Search } from 'lucide-react';
 import { Publication } from '../lib/supabase';
 
 export function Timeline() {
-  const { user } = useAuth();
+  const { isAdmin } = useAuth();
   const { publications, loading, error, updatePublication, deletePublication } = usePublications();
   const [editingPublication, setEditingPublication] = React.useState<Publication | null>(null);
   const [deleteConfirm, setDeleteConfirm] = React.useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
+
+  // Date locale « AAAA-MM-JJ » (toISOString donnerait la date UTC, décalée d'un jour le soir)
+  const toLocalDay = (iso: string) => {
+    const d = new Date(iso);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  };
 
   // Filtrer les publications
   const filteredPublications = useMemo(() => {
@@ -33,14 +39,14 @@ export function Timeline() {
     // Filtrage par date de début
     if (dateFrom) {
       filtered = filtered.filter(pub => 
-        new Date(pub.created_at).toISOString().split('T')[0] >= dateFrom
+        toLocalDay(pub.created_at) >= dateFrom
       );
     }
 
     // Filtrage par date de fin
     if (dateTo) {
       filtered = filtered.filter(pub => 
-        new Date(pub.created_at).toISOString().split('T')[0] <= dateTo
+        toLocalDay(pub.created_at) <= dateTo
       );
     }
 
@@ -175,7 +181,7 @@ export function Timeline() {
             <div key={publication.id}>
               <PublicationCard 
                 publication={publication}
-                isAdmin={!!user}
+                isAdmin={isAdmin}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
               />

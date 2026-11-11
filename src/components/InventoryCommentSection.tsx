@@ -9,7 +9,7 @@ interface InventoryCommentSectionProps {
 }
 
 export function InventoryCommentSection({ partId, partName }: InventoryCommentSectionProps) {
-  const { user } = useAuth();
+  const { isAdmin } = useAuth();
   const { comments, loading, addComment, deleteComment } = useInventoryComments(partId);
   const [showForm, setShowForm] = useState(false);
   const [authorName, setAuthorName] = useState(() => {
@@ -175,7 +175,7 @@ export function InventoryCommentSection({ partId, partName }: InventoryCommentSe
                   <p className="text-gray-700 whitespace-pre-wrap">{comment.content}</p>
                 </div>
 
-                {user && (
+                {isAdmin && (
                   <button
                     onClick={() => handleDelete(comment.id)}
                     className="ml-2 p-1 text-red-600 hover:bg-red-50 rounded transition-colors"
