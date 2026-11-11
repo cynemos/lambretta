@@ -105,6 +105,14 @@ Chaque sauvegarde est vérifiée (lisibilité de la base, intégrité de l'archi
 - Journal : `~/sauvegardes/auto/journal.log`
 - Dernier résultat : `~/sauvegardes/auto/ETAT` (`OK`, `PARTIEL` si le NAS était injoignable, ou `ECHEC`)
 
+**Alertes sur téléphone** (application gratuite [ntfy](https://ntfy.sh)) :
+
+- 🚨 **Échec** (priorité maximale) : sauvegarde impossible ou non vérifiée, avec la cause ;
+- ⚠️ **NAS injoignable** : sauvegarde faite sur le serveur seulement ;
+- ✅ **Bilan du lundi** : « tout va bien ». S'il n'arrive pas, c'est aussi un signal (serveur arrêté, tâche non lancée).
+
+Le nom du canal ntfy, qui sert de mot de passe, est rangé sur le serveur dans `~/.config/lambretta-alerte` (`NTFY_CANAL=...`), jamais dans ce dépôt. Sans ce fichier, aucune alerte n'est envoyée. Pour recevoir les alertes : installer ntfy, appuyer sur **+** et saisir ce nom de canal. Pour forcer un bilan : `BILAN=1 ~/bin/sauvegarde_lambretta.sh`.
+
 ### Restaurer
 
 ```bash
@@ -127,6 +135,7 @@ Chaque commit porte un numéro de version, dans `package.json` et en étiquette 
 
 | Version | Contenu |
 |---|---|
+| **1.2.4** | Alertes de sauvegarde sur téléphone (ntfy) : échec avec sa cause, NAS injoignable, bilan chaque lundi |
 | **1.2.3** | Sauvegardes automatiques chaque nuit (base, fichiers, configurations) vers le NAS, vérifiées et testées en restauration ; scripts dans `scripts/` |
 | **1.2.2** | Ménage du code : plus aucune erreur de typage ni de lint, types précis à la place des `any` ; correction de la fenêtre de modification d'une publication (risque de plantage, texte d'une autre publication) |
 | **1.2.1** | Cartes de chiffres et barres de filtres qui débordaient sur ordinateur et tablette ; ce README |

@@ -17,11 +17,30 @@ W="$LOCAL/$D"
 JOURNAL="$LOCAL/journal.log"
 ETAT="$LOCAL/ETAT"
 mkdir -p "$LOCAL"
+exec 2>>"$JOURNAL"   # les messages d'erreur des commandes vont dans le journal
 
 log() { echo "$(date '+%F %T') $*" | tee -a "$JOURNAL"; }
+
+# Alertes sur téléphone via ntfy (application gratuite). Le nom du canal, secret,
+# est dans ~/.config/lambretta-alerte (NTFY_CANAL=...) et jamais dans le dépôt.
+# Sans ce fichier, aucune alerte n'est envoyée.
+NTFY_CANAL=""
+[ -r "$HOME/.config/lambretta-alerte" ] && . "$HOME/.config/lambretta-alerte"
+alerte() {  # alerte <priorité 1-5> <étiquette> <titre> <message>
+  [ -n "$NTFY_CANAL" ] || return 0
+  python3 -c 'import json,sys; print(json.dumps({"topic":sys.argv[1],"priority":int(sys.argv[2]),"tags":[sys.argv[3]],"title":sys.argv[4],"message":sys.argv[5]}))' \
+    "$NTFY_CANAL" "$1" "$2" "$3" "$4" \
+    | curl -s -m 20 -o /dev/null -X POST -H "Content-Type: application/json" --data-binary @- https://ntfy.sh \
+    || log "alerte ntfy non envoyée"
+}
+
 echec() {
-  log "ÉCHEC : $*"
-  echo "ECHEC $(date '+%F %T') : $*" > "$ETAT"
+  trap - ERR
+  local cause
+  cause=$(grep -v '^20[0-9][0-9]-' "$JOURNAL" | tail -n 1 | cut -c1-200)   # dernier message d'erreur d'une commande
+  log "ÉCHEC : $* ${cause:+($cause)}"
+  echo "ECHEC $(date '+%F %T') : $* ${cause:+($cause)}" > "$ETAT"
+  alerte 5 rotating_light "Sauvegarde Lambretta : ÉCHEC" "$*${cause:+ : $cause}. Détail dans ~/sauvegardes/auto/journal.log sur le serveur." || true
   exit 1
 }
 trap 'echec "erreur ligne $LINENO"' ERR
@@ -83,11 +102,19 @@ if mountpoint -q /mnt/nas-sauvegardes && mkdir -p "$NAS" 2>/dev/null && [ -w "$N
       rm -rf "$dossier"
     fi
   done
-  log "Copie NAS vérifiée : $NAS/$D ($(ls -1d "$NAS"/20??-??-??_???? | wc -l) sauvegardes sur le NAS)"
+  NB_NAS=$(ls -1d "$NAS"/20??-??-??_???? | wc -l)
+  log "Copie NAS vérifiée : $NAS/$D ($NB_NAS sauvegardes sur le NAS)"
   echo "OK $(date '+%F %T') : locale + NAS ($D)" > "$ETAT"
+  # Le lundi (ou à la demande), un petit bilan : l'absence de ce message signale aussi un problème
+  if [ "$(date +%u)" = 1 ] || [ "${BILAN:-0}" = 1 ]; then
+    alerte 2 white_check_mark "Sauvegarde Lambretta : tout va bien" \
+      "Dernière sauvegarde $D vérifiée, $NB_NAS sur le NAS ($(df -h /mnt/nas-sauvegardes | awk 'NR==2 {print $4}') libres). $(sed -n '2,4p' "$W/INVENTAIRE.txt" | tr '\n' ',' | sed 's/,$//; s/,/, /g')." || true
+  fi
 else
   log "ATTENTION : NAS non monté ou non accessible en écriture, sauvegarde locale seulement"
   echo "PARTIEL $(date '+%F %T') : locale seulement, NAS indisponible ($D)" > "$ETAT"
+  alerte 4 warning "Sauvegarde Lambretta : NAS injoignable" \
+    "La sauvegarde $D est faite sur le serveur seulement. Vérifier que le NAS est allumé et le partage sauvegardes-serveur accessible." || true
   exit 2
 fi
 log "=== Fin"
