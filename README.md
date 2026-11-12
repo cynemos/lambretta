@@ -2,7 +2,7 @@
 
 Site de suivi de la restauration d'un scooter **Lambretta LD125 de 1956**, réalisé pour partager chaque étape avec mon père, à qui ce Lambretta a appartenu dans sa jeunesse.
 
-🌐 **En ligne : [cyneprod.org](https://cyneprod.org)**
+🌐 **En ligne : [lambretta.cyneprod.org](https://lambretta.cyneprod.org)**
 
 La consultation est libre : la famille et les amis peuvent suivre l'avancement, laisser un « j'aime » et commenter sans créer de compte. Seul l'administrateur peut ajouter ou modifier le contenu.
 
